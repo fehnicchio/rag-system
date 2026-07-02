@@ -53,6 +53,7 @@ Abra http://localhost:8501 no navegador.
 ## 📁 Estrutura do Projeto
 
 rag-system/
+
 ├── src/
 
 │   ├── embeddings/          # Gerenciamento de embeddings
