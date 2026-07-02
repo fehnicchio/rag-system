@@ -1,0 +1,17 @@
+# Testes de RAG
+
+## Teste 1: Conceito Básico
+Pergunta: "O que é machine learning?"
+Resposta esperada: Definição clara do conceito
+
+## Teste 2: Específico
+Pergunta: "Como treinar uma rede neural?"
+Resposta esperada: Passos detalhados
+
+## Teste 3: Comparação
+Pergunta: "Qual é a diferença entre CNN e RNN?"
+Resposta esperada: Comparação com exemplos
+
+## Teste 4: Aplicação
+Pergunta: "Como usar YOLO em um projeto?"
+Resposta esperada: Guia prático com código

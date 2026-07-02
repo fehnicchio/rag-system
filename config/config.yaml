@@ -1,0 +1,29 @@
+# config/config.yaml
+
+embeddings:
+  model: sentence-transformers/all-MiniLM-L6-v2
+  device: cpu  # ou 'cuda' se tiver GPU
+
+retrieval:
+  vector_store: faiss
+  k: 3  # número de documentos relevantes
+  similarity_threshold: 0.5
+
+generation:
+  model: gpt-3.5-turbo
+  temperature: 0.7
+  max_tokens: 500
+
+documents:
+  supported_formats:
+    - pdf
+    - txt
+    - docx
+    - md
+  chunk_size: 500
+  chunk_overlap: 50
+
+paths:
+  documents: data/documents
+  embeddings: data/embeddings
+  faiss_index: data/embeddings/faiss_index

@@ -1,0 +1,8 @@
+# Documento de Teste
+
+Fernando é um engenheiro de computação com experiência em visão computacional.
+Ele trabalha com desenvolvimento de software em Java usando VRaptor.
+Também gosta de projetos de maker com 3D printing e OpenSCAD.
+
+O RAG (Retrieval-Augmented Generation) é uma técnica que combina busca de documentos
+com geração de texto usando inteligência artificial.
