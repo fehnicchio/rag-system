@@ -53,19 +53,33 @@ Abra http://localhost:8501 no navegador.
 ## 📁 Estrutura do Projeto
 
 rag-system/
+
 ├── src/
+
 │   ├── embeddings/          # Gerenciamento de embeddings
+
 │   ├── retrieval/           # Vector store FAISS
+
 │   ├── generation/          # LLM chain
+
 │   ├── rag_system.py        # Sistema principal
+
 │   └── utils.py             # Funções auxiliares
+
 ├── data/
+
 │   ├── documents/           # Seus documentos aqui
+
 │   └── embeddings/          # Cache do FAISS
+
 ├── config/
+
 │   └── config.yaml          # Configurações
+
 ├── app.py                   # Interface Streamlit
+
 ├── requirements.txt         # Dependências
+
 └── README.md
 
 ## 🛠️ Como Usar
