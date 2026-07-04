@@ -4,6 +4,7 @@ import os
 import sys
 import time
 from pathlib import Path
+from src.cache.cache_manager import CacheManager
 
 # Adicionar diretório ao path
 sys.path.insert(0, str(Path(__file__).parent))
@@ -50,6 +51,7 @@ if 'rag_system' not in st.session_state:
     st.session_state.rag_system = None
     st.session_state.chat_history = []
     st.session_state.db = RAGDatabase()
+    st.session_state.cache = CacheManager()
     st.session_state.last_interaction_id = None
 
 # Sidebar - Controles
@@ -237,6 +239,23 @@ with st.sidebar:
     
     st.divider()
     
+    st.subheader("⚡ Estatísticas do Cache")
+    
+    cache_stats = st.session_state.cache.get_statistics()
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("Respostas em Cache", cache_stats['cached_responses'])
+    with col2:
+        st.metric("Acessos ao Cache", cache_stats['total_cache_hits'])
+    
+    st.metric("Taxa de Acerto", f"{cache_stats['hit_rate']:.1f}%")
+    
+    if st.button("🗑️ Limpar Cache", use_container_width=True):
+        st.session_state.cache.clear()
+        st.success("✅ Cache limpo!")
+        st.rerun()
+    
     # Histórico
     if st.button("🗑️ Limpar Histórico da Sessão", use_container_width=True):
         st.session_state.chat_history = []
@@ -263,10 +282,38 @@ else:
             search_button = st.form_submit_button("🔍", use_container_width=True, help="Buscar")
     
     if search_button and question:
-        with st.spinner("Buscando resposta..."):
-            start_time = time.time()
-            result = st.session_state.rag_system.query(question)
-            response_time = time.time() - start_time
+        # Tentar buscar do cache primeiro
+        cached_result = st.session_state.cache.get(question)
+        
+        if cached_result:
+            # Resposta vem do cache
+            with st.info("⚡ Resposta do cache (instantânea)"):
+                result = cached_result
+                response_time = 0.001  # Simulado
+            
+            # Mesmo do cache, salvar como interação (para feedback)
+            interaction_id = st.session_state.db.save_interaction(
+                question=question,
+                answer=result["answer"],
+                sources=result["sources"],
+                model_used='mistral (cache)'
+            )
+            st.session_state.last_interaction_id = interaction_id
+            st.session_state.current_interaction_id = interaction_id
+        
+        else:
+            # Processar normalmente
+            with st.spinner("Buscando resposta..."):
+                start_time = time.time()
+                result = st.session_state.rag_system.query(question)
+                response_time = time.time() - start_time
+                
+                # Salvar em cache para próxima vez
+                st.session_state.cache.set(
+                    question=question,
+                    answer=result["answer"],
+                    sources=result["sources"]
+                )
             
             # Salvar no banco de dados
             interaction_id = st.session_state.db.save_interaction(
