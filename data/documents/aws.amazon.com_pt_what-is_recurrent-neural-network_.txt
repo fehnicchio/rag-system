@@ -1,0 +1,150 @@
+# O que é RNN (Rede neural recorrente)?
+
+**Fonte:** https://aws.amazon.com/pt/what-is/recurrent-neural-network/
+**Scrapado em:** 2026-07-03T21:45:43.003211
+
+---
+
+O que é RNN (Rede neural recorrente)?
+Criar uma conta da AWS
+O que é RNN?
+Como funciona uma rede neural recorrente?
+Quais são os tipos de redes neurais recorrentes?
+Como as redes neurais recorrentes se comparam a outras redes de aprendizado profundo?
+Quais são algumas variantes da arquitetura de rede neural recorrente?
+Quais são as limitações das redes neurais recorrentes?
+Como os transformadores superam as limitações das redes neurais recorrentes?
+Como a AWS pode oferecer suporte aos seus requisitos de RNN?
+O que é RNN?
+Uma Recurrent Neural Network (RNN – Rede neural recorrente) é um modelo de aprendizado profundo treinado para processar e converter uma entrada de dados sequencial em uma saída de dados sequencial específica. Dados sequenciais são dados, como palavras, frases ou dados de séries temporais, em que componentes sequenciais se inter-relacionam com base em regras complexas de semântica e sintaxe. Uma RNN é um sistema de software que consiste em muitos componentes interconectados que imitam a forma como os humanos realizam conversões sequenciais de dados, como a tradução de texto de um idioma para outro. As RNNs estão sendo amplamente substituídas por inteligência artificial (IA) baseada em transformadores e grandes modelos de linguagem (LLM), que são muito mais eficientes no processamento sequencial de dados.
+Leia sobre redes neurais
+Leia sobre aprendizado profundo
+Leia sobre transformadores em inteligência artificial
+Leia sobre grandes modelos de linguagem
+Como funciona uma rede neural recorrente?
+A imagem a seguir mostra um diagrama de uma RNN.
+As RNNs são feitas de neurônios: nós de processamento de dados que trabalham juntos para realizar tarefas complexas. Os neurônios são organizados como camadas de entrada, saída e ocultas. A camada de entrada recebe as informações a serem processadas e a camada de saída fornece o resultado. O processamento, a análise e a previsão de dados ocorrem na camada oculta.
+Camada oculta
+As RNNs funcionam passando os dados sequenciais que recebem para as camadas ocultas, uma etapa de cada vez. No entanto, eles também têm um fluxo de trabalho em loop automático ou
+recorrente
+: a camada oculta pode lembrar e usar entradas anteriores para previsões futuras em um componente de memória de curto prazo. Ele usa a entrada atual e a memória armazenada para prever a próxima sequência.
+Por exemplo, considere a sequência:
+Apple is red.
+Você quer que a RNN preveja o
+red
+ao receber a sequência de entrada
+Apple is.
+Quando a camada oculta processa a palavra
+Apple
+, ela armazena uma cópia em sua memória. Em seguida, quando vê a palavra
+is
+, ele lembra a
+Apple
+de sua memória e entende a sequência completa:
+Apple is
+para contextualizar. Em seguida, ele pode prever o
+red
+para melhorar a precisão. Isso torna as RNNs úteis em reconhecimento de fala, tradução automática e outras tarefas de modelagem de idiomas.
+Leia sobre tradução automática
+Treinamento
+Os engenheiros de machine learning (ML) treinam redes neurais profundas, como RNNs, alimentando o modelo com dados de treinamento e refinando sua performance. No machine learning, os pesos do neurônio são sinais para determinar a influência das informações aprendidas durante o treinamento ao prever a saída. Cada camada em uma RNN compartilha o mesmo peso.
+Os engenheiros de ML ajustam os pesos para melhorar a precisão da previsão. Eles usam uma técnica chamada retropropagação ao longo do tempo (BPTT) para calcular o erro do modelo e ajustar seu peso adequadamente. O BPTT reverte a saída para a etapa de tempo anterior e recalcula a taxa de erro. Dessa forma, ele pode identificar qual estado oculto na sequência está causando um erro significativo e reajustar o peso para reduzir a margem de erro.
+Leia sobre machine learning
+Quais são os tipos de redes neurais recorrentes?
+As RNNs geralmente são caracterizados pela arquitetura um-para-um: uma sequência de entrada é associada a uma saída. No entanto, você pode ajustá-los de forma flexível em várias configurações para fins específicos. A seguir estão vários tipos comuns de RNN.
+Um para muitos
+Esse tipo de RNN canaliza uma entrada para várias saídas. Ele permite aplicações linguísticas, como legendas de imagens, gerando uma frase a partir de uma única palavra-chave.
+Muitos para muitos
+O modelo usa várias entradas para prever várias saídas. Por exemplo, você pode criar um tradutor de idiomas com uma RNN, que analisa uma frase e estrutura corretamente as palavras em um idioma diferente.
+Muitos para um
+Várias entradas são mapeadas para uma saída. Isso é útil em aplicações como análise de sentimentos, em que o modelo prevê os sentimentos dos clientes, como
+positivos, negativos
+e
+neutros
+, a partir de depoimentos recebidos.
+Como as redes neurais recorrentes se comparam a outras redes de aprendizado profundo?
+As RNNs são uma das várias arquiteturas de redes neurais diferentes.
+Rede neural recorrente versus rede neural de feedback direto
+Assim como as RNNs, as redes neurais feed-forward são redes neurais artificiais que transmitem informações de uma extremidade à outra extremidade da arquitetura. Uma rede neural de feedback direto pode realizar tarefas simples de classificação, regressão ou reconhecimento, mas não consegue se lembrar da entrada anterior que processou. Por exemplo, ele esquece a
+Apple
+quando seu neurônio processa a palavra
+is
+. A RNN supera essa limitação de memória ao incluir um estado de memória oculta no neurônio.
+Rede neural recorrente versus redes neurais convolucionais
+Redes neurais convolucionais são redes neurais artificiais projetadas para processar dados espaciais. Você pode usar redes neurais convolucionais para extrair informações espaciais de vídeos e imagens, passando-as por uma série de camadas convolucionais e agrupadas na rede neural. As RNNs são projetadas para capturar dependências de longo prazo em dados sequenciais
+Quais são algumas variantes da arquitetura de rede neural recorrente?
+A arquitetura de RNN estabeleceu a base para que os modelos de ML tivessem recursos de processamento de linguagem. Surgiram várias variantes que compartilham seu princípio de retenção de memória e melhoram sua funcionalidade original. Veja alguns exemplos a seguir:
+Redes neurais recorrentes bidirecionais
+Uma rede neural recorrente bidirecional (BRNN) processa sequências de dados com camadas para frente e para trás de nós ocultos. A camada avançada funciona de forma semelhante à RNN, que armazena a entrada anterior no estado oculto e a usa para prever a saída subsequente. Enquanto isso, a camada inversa funciona na direção oposta, usando tanto a entrada atual quanto o estado oculto futuro para atualizar o estado oculto atual. A combinação das duas camadas permite que a BRNN melhore a precisão da previsão considerando contextos passados e futuros. Por exemplo, você pode usar a BRNN para prever a palavra
+trees
+na frase
+Apple trees are tall
+.
+Memória de longo prazo
+A Long short-term memory (LSTM – Memória de longo e curto prazo) é uma variante da RNN que permite que o modelo expanda sua capacidade de memória para acomodar um cronograma mais longo. Uma RNN só pode se lembrar da entrada anterior imediata. Ele não pode usar entradas de várias sequências anteriores para melhorar sua previsão.
+Considere as seguintes frases:
+Tom is a cat
+.
+A comida favorita de Tom é peixe
+. Quando você está usando uma RNN, a modelo não consegue se lembrar de que Tom é um gato. Pode gerar vários alimentos ao prever a última palavra. As redes LSTM adicionam um bloco de memória especial chamado
+cells
+na camada oculta. Cada célula é controlada por uma porta de entrada, porta de saída e porta de esquecimento, o que permite que a camada se lembre de informações úteis. Por exemplo, a célula lembra as palavras
+Tom
+e
+cat
+, permitindo que o modelo preveja a palavra
+fish
+.
+Unidades recorrentes fechadas
+Uma Gated Recurrent Unit (GRU – Unidade recorrente fechada) é uma RNN que permite a retenção seletiva de memória. O modelo adiciona uma atualização e esquece o portão em sua camada oculta, que pode armazenar ou remover informações na memória.
+Quais são as limitações das redes neurais recorrentes?
+Desde a introdução da RNN, os engenheiros de ML fizeram um progresso significativo em aplicações de processamento de linguagem natural (PLN) com RNNs e suas variantes. No entanto, a família de modelos de RNN tem várias limitações.
+Leia sobre o processamento de linguagem natural
+Gradiente em explosão
+Uma RNN pode prever erroneamente a saída no treinamento inicial. Você precisa de várias iterações para ajustar os parâmetros do modelo e reduzir a taxa de erro. Você pode descrever a sensibilidade da taxa de erro correspondente ao parâmetro do modelo como um gradiente. Você pode imaginar um gradiente como uma inclinação que você usa para descer de uma colina. Um gradiente mais acentuado permite que o modelo aprenda mais rápido, e um gradiente raso diminui a taxa de aprendizado.
+O gradiente explosivo acontece quando o gradiente aumenta exponencialmente até que a RNN se torne instável. Quando os gradientes se tornam infinitamente grandes, a RNN se comporta de forma irregular, resultando em problemas de performance, como sobreajuste. O sobreajuste é um fenômeno em que o modelo pode prever com precisão com dados de treinamento, mas não pode fazer o mesmo com dados do mundo real.
+Gradiente de desaparecimento
+O problema do gradiente de desaparecimento é uma condição em que o gradiente do modelo se aproxima de zero no treinamento. Quando o gradiente desaparece, a RNN falha em aprender de forma eficaz com os dados de treinamento, resultando em um ajuste insuficiente. Um modelo subajustado não pode funcionar bem em aplicações reais porque seus pesos não foram ajustados adequadamente. As RNNs correm o risco de desaparecer e explodir problemas de gradiente ao processar longas sequências de dados.
+Tempo de treinamento lento
+Uma RNN processa dados sequencialmente, o que limita sua capacidade de processar um grande número de textos com eficiência. Por exemplo, um modelo de RNN pode analisar o sentimento de um comprador a partir de algumas frases. No entanto, é necessário um enorme poder de computação, espaço de memória e tempo para resumir uma página de um ensaio.
+Como os transformadores superam as limitações das redes neurais recorrentes?
+Os transformadores são modelos de aprendizado profundo que usam mecanismos de autoatenção em uma rede neural de feedback de codificador-decodificador. Eles podem processar dados sequenciais da mesma forma que as RNNs.
+Autoatenção
+Os transformadores não usam estados ocultos para capturar as interdependências das sequências de dados. Em vez disso, eles usam um título de autoatenção para processar sequências de dados em paralelo. Isso permite que os transformadores treinem e processem sequências mais longas em menos tempo do que uma RNN. Com o mecanismo de autoatenção, os transformadores superam as limitações de memória e as interdependências de sequência que as RNNs enfrentam. Os transformadores podem processar sequências de dados em paralelo e usar a codificação posicional para lembrar como cada entrada se relaciona com outras.
+Paralelismo
+Os transformadores resolvem os problemas de gradiente que as RNNs enfrentam ao permitir o paralelismo durante o treinamento. Ao processar todas as sequências de entrada simultaneamente, um transformador não está sujeito a restrições de retropropagação porque os gradientes podem fluir livremente para todos os pesos. Eles também são otimizados para computação paralela, que as unidades de processamento gráfico (GPUs) oferecem para desenvolvimentos de IA generativa. O paralelismo permite que os transformadores escalem massivamente e lidem com tarefas complexas de PLN criando modelos maiores.
+Como a AWS pode oferecer suporte aos seus requisitos de RNN?
+A
+IA generativa
+na Amazon Web Services (AWS) fornece serviços, ferramentas e recursos que você pode usar para criar, gerenciar e escalar aplicativos tradicionais de IA com tecnologia avançada baseada em transformadores. Por exemplo:
+O Amazon SageMaker
+é um serviço totalmente gerenciado para preparar dados e criar, treinar e implantar modelos de ML para qualquer caso de uso. Ele tem infraestrutura, ferramentas e fluxos de trabalho totalmente gerenciados.
+O Amazon Bedrock
+simplifica o desenvolvimento generativo de IA ao permitir a personalização e a implantação de
+modelos básicos
+(FM) líderes do setor com segurança e eficiência.
+O AWS Trainium
+é um acelerador de ML que você pode usar para treinar e escalar modelos de aprendizado profundo de forma acessível na nuvem.
+Comece a usar a IA generativa na AWS
+inscrevendo-se em uma conta
+hoje mesmo.
+Próximas etapas na AWS
+Confira recursos adicionais relacionados a produtos
+Inove mais rápido com os serviços de IA generativa da AWS
+Cadastre-se para obter uma conta gratuita
+Obtenha acesso instantâneo ao nível gratuito da AWS.
+Cadastre-se
+Comece a criar no console
+Comece a criar no Console de Gerenciamento da AWS.
+Faça login
+Browse all cloud computing concepts
+Browse all cloud computing concepts content here:
+Carregando
+Carregando
+Carregando
+Carregando
+Carregando
+Did you find what you were looking for today?
+Let us know so we can improve the quality of the content on our pages
+Yes
+No

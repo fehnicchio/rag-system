@@ -1,0 +1,133 @@
+# O que são redes neurais convolucionais?
+
+**Fonte:** https://www.ibm.com/br-pt/think/topics/convolutional-neural-networks
+**Scrapado em:** 2026-07-03T21:26:44.599253
+
+---
+
+O que são redes neurais convolucionais?
+Definição de redes neurais convolucionais
+Redes neurais convolucionais utilizam dados tridimensionais para tarefas de
+classificação de imagens
+e
+reconhecimento de objetos
+.
+As
+redes neurais
+são um subconjunto do aprendizado de máquina que se encontram no coração dos algoritmos de deep learning.
+São compostas por nó camadas, contendo uma camada de entrada, uma ou mais camadas ocultas e uma camada de saída. Cada nó conecta-se a outro e tem peso e um limite associados. Se a saída de qualquer nó individual estiver acima do valor de limiar especificado, esse nó será ativado, enviando dados para a próxima camada da rede. Caso contrário, nenhum dado será passado para a próxima camada da rede.
+Embora tenhamos focado principalmente em redes feedforward neste artigo, existem vários tipos de redes neurais, que são usadas para diferentes casos de uso e tipos de dados. Por exemplo, redes neurais recorrentes são comumente usadas para processamento de linguagem natural e reconhecimento de fala, enquanto redes neurais convolucionais (ConvNets ou CNNs) são mais frequentemente utilizadas para tarefas de classificação e visão computacional. Antes das CNNs, métodos manuais e demorados de extração de características eram usados para identificar objetos em imagens. No entanto, as redes neurais convolucionais agora oferecem uma abordagem mais escalável para tarefas de classificação de imagens e reconhecimento de objetos, aproveitando princípios da álgebra linear, especificamente a multiplicação de matrizes, para identificar padrões dentro de uma imagem. Dito isso, elas podem ser computacionalmente exigentes, exigindo unidades de processamento gráfico (GPUs) para treinar modelos.
+Junte-se a mais de 100.000 assinantes que leem as últimas notícias de tecnologia
+Fique por dentro das tendências mais importantes e intrigantes do setor em IA, automação, dados e muito mais com o boletim informativo da Think, enviada duas vezes por semana. Consulte a
+declaração de privacidade da IBM
+.
+Agradecemos a você!
+Sua inscrição está ativa.
+Como funciona uma rede neural convolucional?
+As redes neurais convolucionais se destacam das outras redes neurais pelo desempenho superior ao lidar com inputs de imagem, fala ou sinais de áudio. Elas possuem três tipos principais de camadas:
+Camada convolucional
+Camada de agrupamento
+Camada totalmente conectada (FC)
+A camada convolucional é a primeira camada de uma rede convolucional. Enquanto as camadas convolucionais podem ser seguidas por camadas convolucionais adicionais ou camadas de agrupamento, a camada totalmente conectada é a camada final. Com cada camada, a CNN aumenta em sua complexidade, identificando partes maiores da imagem. As camadas anteriores se concentram em características simples, como cores e extremidades. À medida que os dados da imagem progridem por meio das camadas da CNN, ela começa a reconhecer elementos ou formas maiores do objeto até que finalmente identifica o objeto pretendido.
+Camada convolucional
+A camada convolucional é o principal componente de uma CNN e onde ocorre a maior parte dos cálculos. Ela precisa de alguns componentes: os dados de input, um filtro e um mapa de funcionalidades. Suponha que o input seja uma imagem colorida, composta por uma matriz tridimensional de pixels. Isso significa que o input terá três dimensões: altura, largura e profundidade, que correspondem aos canais RGB em uma imagem. Também há um detector de funcionalidades, conhecido como kernel ou filtro, que percorre os campos receptivos da imagem para verificar a presença da funcionalidade. Esse processo é chamado de convolução.
+O detector de funcionalidades é uma matriz bidimensional de pesos, que representa uma parte da imagem. Embora o tamanho possa variar, o filtro geralmente é uma matriz 3x3, o que também define o tamanho do campo receptivo. O filtro é aplicado a uma região da imagem, e o produto escalar entre os pixels de input e o filtro é calculado. Esse produto escalar é então inserido em uma matriz de saída. Em seguida, o filtro se desloca conforme o valor do deslocamento, repetindo o processo até percorrer toda a imagem. O resultado final da sequência de produtos escalares entre o input e o filtro é chamado de mapa de funcionalidades, mapa de ativação ou funcionalidade convoluída.
+Os pesos do detector de funcionalidades permanecem fixos ao longo do deslocamento na imagem, processo conhecido como compartilhamento de parâmetros. Alguns parâmetros, como os valores dos pesos, são ajustados durante o treinamento por meio da retropropagação e do gradiente descendente. No entanto, três hiperparâmetros afetam o tamanho do volume de saída e precisam ser definidos antes do início do treinamento da rede neural. Esses hiperparâmetros incluem:
+1. O
+número de filtros
+afeta a profundidade da produção. Por exemplo, três filtros distintos resultariam em três mapas de recursos diferentes, criando uma profundidade de três.
+2.
+Stride
+é a distância, ou número de pixels, que o kernel se move sobre a matriz de input. Embora valores de stride de dois ou mais sejam raros, um stride maior tem uma produção menor.
+3.
+Zero-padding
+é geralmente usado quando os filtros não se encaixam na imagem de input. Isso define todos os elementos que ficam fora da matriz de input como zero, produzindo uma produção de tamanho maior ou igual. Existem três tipos de padding:
+Padding válido:
+também conhecido como no padding. Neste caso, a última convolução é descartada se as dimensões não se alinharem.
+Padding igual:
+este padding garante que a camada de produção tenha o mesmo tamanho que a camada de input.
+Padding completo:
+Este tipo de padding aumenta o tamanho da produção adicionando zeros à borda do input.
+Após cada operação de convolução, uma CNN aplica uma transformação de Unidade Linear Retificada (ReLU) no mapa de feição, introduzindo não linearidade no modelo.
+Camada convolucional adicional
+Como mencionado anteriormente, outra camada convolucional pode ser adicionada após a camada inicial. Quando isso ocorre, a estrutura da CNN pode se tornar hierárquica, pois as camadas posteriores conseguem visualizar os pixels nos campos receptivos das camadas anteriores. Por exemplo, suponha que estamos tentando identificar se uma imagem contém uma bicicleta. A bicicleta pode ser vista como a soma de várias partes. Ela é composta por um quadro, guidão, rodas, pedais e outros componentes. Cada parte individual da bicicleta forma um padrão de nível inferior na rede neural, e a combinação dessas partes representa um padrão de nível superior, criando uma hierarquia de funcionalidades dentro da CNN. No fim, a camada convolucional transforma a imagem em valores numéricos, permitindo que a rede neural interprete e extraia padrões relevantes.
+Camada de agrupamento
+As camadas de agrupamento, também conhecidas como downsampling, conduzem a redução de dimensionalidade, reduzindo o número de parâmetros na entrada. Semelhante à camada convolucional, a operação de agrupamento varre um filtro por toda a entrada, mas a diferença é que este filtro não tem nenhum peso. Em vez disso, o kernel aplica uma função de agregação aos valores dentro do campo receptivo, preenchendo a matriz de saída. Existem dois tipos principais de agrupamento:
+Pooling máximo:
+à medida que o filtro se move pelo input, ele seleciona o pixel com o valor máximo para enviar para a matriz de produção. Como uma observação, essa abordagem tende a ser usada mais frequentemente em comparação com o pooling médio
+Pooling médio:
+à medida que o filtro se move pelo input, ele calcula o valor médio dentro do campo receptivo para enviar ao array de produção.
+Enquanto muitas informações são perdidas na camada de agrupamento, elas também têm vários benefícios para a CNN. Elas ajudam a reduzir a complexidade, melhorar a eficiência e limitar o risco de superajuste.
+Camada totalmente conectada
+O nome da camada totalmente conectada se descreve apropriadamente. Como mencionado anteriormente, os valores de pixel da imagem de entrada não estão diretamente conectados à camada de saída em camadas parcialmente conectadas. No entanto, na camada totalmente conectada, cada nó na camada de saída se conecta diretamente a um nó na camada anterior.
+Essa camada executa a tarefa de classificação baseada nas feições extraídas através das camadas anteriores e seus diferentes filtros. Enquanto as camadas convolucionais e de agrupamento tendem a utilizar funções ReLu, as camadas FC normalmente utilizam uma função de ativação softmax para classificar as entradas adequadamente, produzindo uma probabilidade de 0 a 1.
+Tipos de redes neurais convolucionais
+Kunihiko Fukushima e Yann LeCun estabeleceram a base da pesquisa sobre redes neurais convolucionais em seu trabalho em
+1980 (PDF)
+e “Backpropagation Applied to Handwritten Zip Code Recognition” em 1989, respectivamente. Yann LeCun ficou mais conhecido por aplicar com sucesso a retropropagação para treinar redes neurais a identificar e reconhecer padrões em uma série de códigos postais manuscritos. Ele continuou sua pesquisa com sua equipe ao longo da década de 1990, culminando no desenvolvimento do “LeNet-5”, que aplicou os mesmos princípios dos estudos anteriores ao reconhecimento de documentos. Desde então, surgiram várias arquiteturas variantes de CNN com a introdução de novos conjuntos de dados, como MNIST e CIFAR-10, além de concorrentes semelhantes ao ImageNet Large Scale Visual Recognition Challenge (ILSVRC). Algumas dessas outras arquiteturas incluem:
+AlexNet (PDF)
+VGGNet (PDF)
+GoogLeNet (PDF)
+ResNet (PDF)
+ZFNet
+No entanto, a LeNet-5 é conhecida como a arquitetura CNN clássica.
+Mixture of Experts | 12 de dezembro, episódio 85
+Decodificando a IA: resumo semanal das notícias
+Participe do nosso renomado painel de engenheiros, pesquisadores, líderes de produtos e outros enquanto filtram as informações sobre IA para trazerem a você as mais recentes notícias e insights sobre IA.
+Veja todos os episódios de Mixture of Experts
+Redes neurais convolucionais e visão computacional
+As redes neurais convolucionais impulsionam o reconhecimento de imagens e tarefas de computer vision.
+Computer vision
+é um campo da inteligência artificial (IA) que permite que computadores e sistemas obtenham informações relevantes a partir de imagens digitais, vídeos e outros insumos visuais e, com base nesses dados, tomem decisões. Essa capacidade de oferecer recomendações diferencia esse processo das tarefas de reconhecimento de imagens. Atualmente, algumas aplicações comuns dessa tecnologia de computer vision incluem:
+Marketing:
+As plataformas de mídia social sugerem quem pode estar em uma foto postada em um perfil, facilitando a marcação de amigos em álbuns de fotos.
+Saúde:
+A visão da computação foi incorporada à tecnologia radiológica, permitindo que os médicos identifiquem melhor tumores cancerosos em anatomia saudável.
+Varejo:
+A busca visual foi integrada a algumas plataformas de e-commerce, permitindo que as marcas recomendem itens que combinem com o guarda-roupa do usuário.
+Automotivo:
+Embora os carros autônomos ainda não sejam uma realidade consolidada, a tecnologia por trás deles já está sendo aplicada aos veículos, aumentando a segurança de motoristas e passageiros com funcionalidades como a detecção de faixas.
+Link copied
+Ebook
+Liberar o poder da IA generativa e do aprendizado de máquina
+Saiba como incorporar com confiança a IA generativa e o aprendizado de máquina em sua empresa.
+Leia o ebook
+Recursos
+Explicação
+Redes neurais do zero
+Obtenha uma compreensão profunda das redes neurais, suas funções básicas e os fundamentos da construção de uma.
+Leia o artigo
+modelos de IA
+Explore o IBM Granite
+O IBM Granite é uma família de modelos de IA abertos, de alto desempenho e confiáveis, personalizados para a empresa e otimizados para escalar suas aplicações de IA. Explore opções de linguagem, código, séries temporais e proteções.
+Conheça o Granite
+Ebook
+Liberar o poder da IA generativa e do aprendizado de máquina
+Saiba como incorporar com confiança a IA generativa e o aprendizado de máquina em sua empresa.
+Leia o ebook
+Ebook
+Como escolher o modelo de base certo
+Saiba como selecionar o modelo de base de IA mais adequado para seu caso de uso.
+Leia o ebook
+Guia
+Guia do CEO sobre IA generativa
+Aprenda como os CEOs podem equilibrar o valor que a IA generativa pode criar com o investimento que ela exige e os riscos que ela introduz.
+Leia o guia
+Guia
+Coloque a IA para trabalhar: como gerar ROI com a IA generativa
+Quer ter mais retorno sobre seus investimentos em IA? Saiba como o dimensionamento da IA generativa em áreas importantes promove mudanças, ajudando suas melhores mentes a criar e oferecer soluções novas e inovadoras.
+Leia o guia
+Soluções relacionadas
+IBM watsonx.ai
+Treine, valide, ajuste e implemente recursos de IA generativa, modelos de base e recursos de aprendizado de máquina com o IBM watsonx.ai, um estúdio empresarial de última geração para construtores de IA. Crie aplicações de IA em uma fração do tempo com uma fração dos dados.
+Conheça o watsonx.ai
+Soluções de inteligência artificial
+Use a IA a serviço de sua empresa com a experiência e o portfólio de soluções líder do setor da IBM à sua disposição.
+Explore as soluções de IA
+Consultoria e serviços em IA
+Reinvente os fluxos de trabalho e operações críticos adicionando IA para maximizar experiências, tomadas de decisão em tempo real e valor de negócios.
+Explore os serviços de IA
+Dê o próximo passo
+Obtenha acesso completo aos recursos que abrangem o ciclo de vida do desenvolvimento da IA. Produza soluções poderosas de IA com interfaces fáceis de usar, fluxos de trabalhos e acesso a APIs e SDKs padrão do setor.
+Explore o watsonx.ai
+Agende uma demonstração em tempo real
