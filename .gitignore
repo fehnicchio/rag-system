@@ -34,4 +34,4 @@ data/embeddings/
 *.log
 .pytest_cache/
 .coverage
-htmlcov/
+htmlcov/data/learning/*.json

@@ -363,28 +363,82 @@ with st.sidebar:
     st.divider()
 
     # ── Aprendizado ──
-    st.markdown("#### 🧠 Aprendizado")
-    if st.button("📊 Analisar Feedback", use_container_width=True):
+    st.markdown("#### 🧠 Aprendizado Contínuo")
+
+    # Estado atual do aprendizado
+    try:
+        from src.learning.learning_store import LearningStore
+        from src.database.models import RAGDatabase as _RAGDatabase
+        _store   = LearningStore()
+        _summary = _store.get_summary()
+        _pending = st.session_state.db.get_unprocessed_feedback_count()
+
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Regras ativas", _summary["rules_count"])
+        with col2:
+            st.metric("Exemplos Q&A", _summary["examples_count"])
+
+        if _pending > 0:
+            st.warning(f"⏳ {_pending} feedback(s) aguardando análise")
+        else:
+            st.success("✅ Todos os feedbacks processados")
+    except Exception:
+        st.caption("Aprendizado ainda não inicializado")
+        _pending = 0
+
+    # Botão de análise
+    if st.button("🔍 Analisar e Aprender", use_container_width=True, type="primary"):
         try:
             from src.learning.feedback_learner import FeedbackLearner
-            with st.spinner("Analisando feedbacks negativos..."):
+            with st.spinner("Lendo feedbacks e treinando o sistema..."):
                 learner = FeedbackLearner()
-                analysis = learner.analyze_feedback()
-                learner.save_recommendations(analysis['recommendations'])
+                result  = learner.analyze_feedback()
 
-            if analysis['total_analyzed'] > 0:
-                st.metric("Feedbacks analisados", analysis['total_analyzed'])
-                if analysis['issues_found']:
-                    st.write("**🔍 Principais problemas:**")
-                    for issue, data in analysis['issues_found'][:3]:
-                        with st.expander(f"{issue} ({data['count']}x)"):
-                            for ex in data['examples'][:2]:
-                                st.caption(f"**Q:** {ex['question']}")
-                                st.caption(f"**Feedback:** {ex['comment']}")
+            if result["processed"] == 0:
+                st.info("ℹ️ Nenhum feedback novo para processar.")
             else:
-                st.info("Nenhum feedback negativo ainda.")
+                st.success(
+                    f"✅ {result['processed']} feedback(s) processado(s)  \n"
+                    f"📌 {len(result['new_rules'])} nova(s) regra(s)  \n"
+                    f"✍️ {result['new_examples']} exemplo(s) corrigido(s)"
+                )
+                # Recarregar aprendizado no LLM chain ativo
+                if (st.session_state.rag_system
+                        and st.session_state.rag_system.llm_chain):
+                    st.session_state.rag_system.llm_chain.reload_learning()
+
+                if result["new_rules"]:
+                    with st.expander("📌 Novas regras aprendidas"):
+                        for rule in result["new_rules"]:
+                            st.caption(f"• {rule}")
+                st.rerun()
+
         except Exception as e:
             st.error(f"❌ Erro: {str(e)}")
+
+    # Ver estado atual do aprendizado
+    try:
+        _rules = _store.load_rules()
+        _examples = _store.load_examples(limit=3)
+        if _rules or _examples:
+            with st.expander("👁️ Ver aprendizado atual"):
+                if _rules:
+                    st.markdown("**Regras ativas:**")
+                    for r in _rules[:5]:
+                        st.caption(f"• {r['rule']}")
+                if _examples:
+                    st.markdown("**Exemplos recentes:**")
+                    for ex in _examples:
+                        st.caption(f"❓ {ex['question'][:60]}...")
+                        st.caption(f"✅ {ex['good_answer'][:80]}...")
+                        st.divider()
+                if st.button("🗑️ Resetar Aprendizado", use_container_width=True):
+                    _store.clear_all()
+                    st.warning("Aprendizado resetado.")
+                    st.rerun()
+    except Exception:
+        pass
 
     st.divider()
 

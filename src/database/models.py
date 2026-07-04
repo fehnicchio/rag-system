@@ -145,6 +145,87 @@ class RAGDatabase:
         
         return results
 
+    def get_negative_feedback(self, limit=50) -> list[dict]:
+        """
+        Retorna feedbacks negativos com comentário.
+        Usado pelo FeedbackLearner e pelo painel de análise no app.
+        """
+        conn = sqlite3.connect(self.db_path)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT
+                f.id          AS feedback_id,
+                f.comment,
+                f.timestamp   AS feedback_ts,
+                i.id          AS interaction_id,
+                i.question,
+                i.answer
+            FROM feedback f
+            JOIN interactions i ON i.id = f.interaction_id
+            WHERE f.is_helpful = 0
+              AND f.comment IS NOT NULL
+              AND TRIM(f.comment) != ''
+            ORDER BY f.timestamp DESC
+            LIMIT ?
+        """, (limit,))
+
+        rows = [dict(r) for r in cursor.fetchall()]
+        conn.close()
+        return rows
+
+    def get_all_feedback(self, limit=100) -> list[dict]:
+        """Retorna todos os feedbacks (positivos e negativos) com dados da interação."""
+        conn = sqlite3.connect(self.db_path)
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT
+                f.id          AS feedback_id,
+                f.is_helpful,
+                f.comment,
+                f.timestamp,
+                i.question,
+                i.answer
+            FROM feedback f
+            JOIN interactions i ON i.id = f.interaction_id
+            ORDER BY f.timestamp DESC
+            LIMIT ?
+        """, (limit,))
+
+        rows = [dict(r) for r in cursor.fetchall()]
+        conn.close()
+        return rows
+
+    def get_unprocessed_feedback_count(self) -> int:
+        """Retorna quantos feedbacks negativos ainda não foram processados pelo learner."""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        # Tabela pode não existir ainda — criar silenciosamente
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS feedback_processed (
+                feedback_id INTEGER PRIMARY KEY,
+                processed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+
+        cursor.execute("""
+            SELECT COUNT(*) FROM feedback f
+            LEFT JOIN feedback_processed fp ON fp.feedback_id = f.id
+            WHERE f.is_helpful = 0
+              AND f.comment IS NOT NULL
+              AND TRIM(f.comment) != ''
+              AND fp.feedback_id IS NULL
+        """)
+        count = cursor.fetchone()[0]
+        conn.commit()
+        conn.close()
+        return count
+
+
 # Teste
 if __name__ == "__main__":
     db = RAGDatabase()
