@@ -16,19 +16,32 @@ logger = logging.getLogger(__name__)
 
 
 class RAGSystem:
-    """Sistema RAG completo com pipeline FAISS → Cross-Encoder → LLM."""
+    """
+    Sistema RAG completo.
+    Pipeline: FAISS → Cross-Encoder Reranker → LLM (Ollama)
 
-    # Quantos chunks buscar no FAISS antes de rerankar.
-    # Deve ser grande o suficiente para cobrir todos os documentos.
-    # O reranker reduz esse pool para config['retrieval']['k'] no final.
-    RETRIEVAL_POOL_SIZE = 20  # ← ajuste conforme o tamanho do seu corpus
+    Suporta:
+      - Múltiplos modelos Ollama (troca em runtime)
+      - Modos de conhecimento: docs_only | hybrid
+      - Aprendizado contínuo via FeedbackLearner
+    """
 
-    def __init__(self, config_path='config/config.yaml'):
+    RETRIEVAL_POOL_SIZE = 20
+
+    def __init__(
+        self,
+        config_path: str = 'config/config.yaml',
+        model_name: str = 'mistral',
+        knowledge_mode: str = 'docs_only',
+    ):
         logger.info("=" * 50)
         logger.info("Inicializando Sistema RAG")
         logger.info("=" * 50)
 
-        self.config = load_config(config_path)
+        self.config         = load_config(config_path)
+        self.model_name     = model_name
+        self.knowledge_mode = knowledge_mode
+
         ensure_directories_exist(self.config)
 
         self._init_embeddings()
@@ -37,26 +50,24 @@ class RAGSystem:
 
         logger.info("✅ Sistema RAG inicializado com sucesso!\n")
 
-    # ─────────────────────────────────────────────────────────────────────────
-    # Inicialização dos componentes
-    # ─────────────────────────────────────────────────────────────────────────
+    # ─── Inicialização ─────────────────────────────────────────────────────────
 
     def _init_embeddings(self):
-        model_name = self.config['embeddings']['model']
-        self.embedding_manager = EmbeddingManager(model_name=model_name)
+        self.embedding_manager = EmbeddingManager(
+            model_name=self.config['embeddings']['model']
+        )
 
     def _init_vector_store(self):
-        index_path = self.config['paths']['faiss_index']
         self.vector_store = VectorStore(
             embeddings=self.embedding_manager.get_embeddings(),
-            index_path=index_path
+            index_path=self.config['paths']['faiss_index']
         )
         try:
             self.vector_store.load_index()
             self.retriever_ready = True
-            logger.info("✅ Índice FAISS carregado do cache")
+            logger.info("✅ Índice FAISS carregado")
         except Exception:
-            logger.info("ℹ️  Nenhum índice encontrado. Construa a base de conhecimento primeiro.")
+            logger.info("ℹ️  Índice não encontrado. Construa a base primeiro.")
             self.retriever_ready = False
 
     def _init_llm_chain(self):
@@ -65,175 +76,149 @@ class RAGSystem:
 
             if not self.retriever_ready:
                 self.llm_chain = None
-                logger.warning("⚠️  LLM Chain não inicializado (índice não existe)")
+                logger.warning("⚠️  LLM Chain não inicializado (índice ausente)")
                 return
 
-            # Criar re-ranker (Cross-Encoder)
             self.reranker = DocumentReranker()
 
-            # ── Pool size: quantos chunks buscar no FAISS ──────────────────
-            # A ideia é buscar chunks suficientes para garantir que todos os
-            # documentos tenham ao menos um representante no pool antes do
-            # reranking. Usamos o maior valor entre:
-            #   • RETRIEVAL_POOL_SIZE (mínimo configurável)
-            #   • n_docs * chunks_por_doc estimado
-            # mas limitamos ao total de vetores no índice para não pedir mais
-            # do que existe.
-            final_k = self.config['retrieval']['k']          # ex: 3 (saída final)
-            pool_size = self._calculate_pool_size(final_k)
+            pool_size    = self._calculate_pool_size()
+            final_k      = self.config['retrieval']['k']
 
             logger.info(
-                f"📐 Retrieval: FAISS busca {pool_size} chunks → "
-                f"Cross-Encoder re-ranka → top {final_k} para o LLM"
+                f"📐 Retrieval: FAISS={pool_size} chunks → "
+                f"Re-rank → top {final_k}"
             )
 
             base_retriever = self.vector_store.get_retriever(k=pool_size)
-            retriever = self._create_reranking_retriever(
-                base_retriever, self.reranker, top_k=final_k
-            )
+            retriever      = self._create_reranking_retriever(base_retriever, self.reranker, final_k)
 
             self.llm_chain = RAGChain(
-                retriever=retriever,
-                api_key=api_key,
-                temperature=self.config['generation']['temperature'],
-                max_tokens=self.config['generation']['max_tokens']
+                retriever      = retriever,
+                api_key        = api_key,
+                temperature    = self.config['generation']['temperature'],
+                max_tokens     = self.config['generation']['max_tokens'],
+                model_name     = self.model_name,
+                knowledge_mode = self.knowledge_mode,
             )
 
         except Exception as e:
             logger.error(f"Erro ao inicializar LLM: {e}")
             self.llm_chain = None
 
-    def _calculate_pool_size(self, final_k: int) -> int:
-        """
-        Calcula quantos chunks buscar no FAISS para garantir cobertura ampla.
-
-        Lógica:
-        - Tenta descobrir o total de vetores no índice FAISS.
-        - Pool = max(RETRIEVAL_POOL_SIZE, total_vetores) mas nunca mais que
-          o total existente (evita erro do FAISS).
-        - Se não conseguir descobrir o total, usa RETRIEVAL_POOL_SIZE.
-        """
+    def _calculate_pool_size(self) -> int:
+        """Calcula pool de documentos para o FAISS (busca ampla antes do rerank)."""
         try:
-            # FAISS expõe o número de vetores via .index.ntotal
-            total_vectors = self.vector_store.index.ntotal
-            # Nunca pedir mais do que existe; nunca menos que o mínimo definido
-            pool = min(max(self.RETRIEVAL_POOL_SIZE, total_vectors), total_vectors)
-            logger.info(f"  Vetores no índice FAISS: {total_vectors} → pool={pool}")
+            total = self.vector_store.vector_store.index.ntotal
+            pool  = min(max(self.RETRIEVAL_POOL_SIZE, total), total)
+            logger.info(f"  Vetores FAISS: {total} → pool={pool}")
             return pool
-        except AttributeError:
-            # VectorStore não expõe .index diretamente — tenta via get_index()
-            try:
-                total_vectors = self.vector_store.get_index().ntotal
-                pool = min(max(self.RETRIEVAL_POOL_SIZE, total_vectors), total_vectors)
-                logger.info(f"  Vetores no índice FAISS: {total_vectors} → pool={pool}")
-                return pool
-            except Exception:
-                logger.warning(
-                    f"  Não foi possível ler ntotal do índice FAISS. "
-                    f"Usando pool_size={self.RETRIEVAL_POOL_SIZE}"
-                )
-                return self.RETRIEVAL_POOL_SIZE
-
-    # ─────────────────────────────────────────────────────────────────────────
-    # Wrapper de retriever com reranking
-    # ─────────────────────────────────────────────────────────────────────────
+        except Exception:
+            return self.RETRIEVAL_POOL_SIZE
 
     def _create_reranking_retriever(self, base_retriever, reranker, top_k: int):
-        """Wrapper que aplica Cross-Encoder após a busca vetorial."""
+        """Wrapper que aplica Cross-Encoder após busca vetorial."""
 
         class RerankerRetriever:
             def __init__(self, base_ret, rerank, k):
                 self.base_retriever = base_ret
-                self.reranker = rerank
-                self.top_k = k
+                self.reranker       = rerank
+                self.top_k          = k
 
             def invoke(self, query):
-                # 1. FAISS recupera pool amplo de candidatos
                 candidates = self.base_retriever.invoke(query)
-                logger.debug(f"  FAISS retornou {len(candidates)} candidatos")
+                return self.reranker.rerank(query, candidates, top_k=self.top_k)
 
-                # 2. Cross-Encoder re-ranka e seleciona os melhores
-                reranked = self.reranker.rerank(query, candidates, top_k=self.top_k)
-                logger.debug(f"  Reranker selecionou {len(reranked)} documentos finais")
-                return reranked
-
-            # Compatibilidade com chains antigas do LangChain
             def get_relevant_documents(self, query):
                 return self.invoke(query)
 
         return RerankerRetriever(base_retriever, reranker, top_k)
 
-    # ─────────────────────────────────────────────────────────────────────────
-    # API pública
-    # ─────────────────────────────────────────────────────────────────────────
+    # ─── Troca de modelo / modo em runtime ────────────────────────────────────
+
+    def change_model(self, new_model: str):
+        """Troca o modelo Ollama sem reconstruir o índice FAISS."""
+        if not self.llm_chain:
+            raise RuntimeError("LLM Chain não inicializado. Construa a base primeiro.")
+        self.llm_chain.change_model(new_model)
+        self.model_name = new_model
+        logger.info(f"✅ Modelo alterado para: {new_model}")
+
+    def change_knowledge_mode(self, new_mode: str):
+        """Troca o modo de conhecimento em runtime."""
+        if not self.llm_chain:
+            raise RuntimeError("LLM Chain não inicializado.")
+        self.llm_chain.change_knowledge_mode(new_mode)
+        self.knowledge_mode = new_mode
+        logger.info(f"✅ Modo alterado para: {new_mode}")
+
+    # ─── API pública ───────────────────────────────────────────────────────────
 
     def build_knowledge_base(self) -> bool:
         """Constrói o índice FAISS a partir dos documentos em disco."""
         logger.info("Construindo base de conhecimento...")
 
-        documents_path = self.config['paths']['documents']
-        doc_paths = list_documents(documents_path)
-
+        doc_paths = list_documents(self.config['paths']['documents'])
         if not doc_paths:
-            logger.error(f"❌ Nenhum documento encontrado em {documents_path}")
+            logger.error("❌ Nenhum documento encontrado")
             return False
 
-        logger.info(f"📄 Encontrados {len(doc_paths)} documentos")
+        logger.info(f"📄 {len(doc_paths)} documentos encontrados")
 
         try:
-            chunked_docs = self.vector_store.load_documents(
-                document_paths=doc_paths,
-                chunk_size=self.config['documents']['chunk_size'],
-                chunk_overlap=self.config['documents']['chunk_overlap']
+            chunks = self.vector_store.load_documents(
+                document_paths = doc_paths,
+                chunk_size     = self.config['documents']['chunk_size'],
+                chunk_overlap  = self.config['documents']['chunk_overlap']
             )
 
-            if not chunked_docs:
-                logger.error("❌ Nenhum chunk gerado. Verifique os documentos.")
+            if not chunks:
+                logger.error("❌ Nenhum chunk gerado")
                 return False
 
-            logger.info(f"  Total de chunks gerados: {len(chunked_docs)}")
+            logger.info(f"  Total de chunks: {len(chunks)}")
+            self.vector_store.build_index(chunks, save=True)
 
-            self.vector_store.build_index(chunked_docs, save=True)
-            self._init_llm_chain()   # Reinicializa com o novo índice
             self.retriever_ready = True
+            self._init_llm_chain()
 
-            logger.info("✅ Base de conhecimento construída com sucesso!")
+            logger.info("✅ Base de conhecimento construída!")
             return True
 
         except Exception as e:
-            logger.error(f"❌ Erro ao construir base: {e}")
+            logger.error(f"❌ Erro: {e}")
             return False
 
-    def query(self, question: str) -> dict:
+    def query(self, question: str, knowledge_mode: str = None) -> dict:
         """
         Faz uma pergunta ao sistema RAG.
 
+        Args:
+            question:       Pergunta do usuário
+            knowledge_mode: Sobrescreve o modo padrão se informado
+
         Returns:
-            {"answer": str, "sources": list}
+            {"answer": str, "sources": list[dict]}
         """
         if not self.retriever_ready or not self.llm_chain:
             return {
-                "answer": "❌ Sistema não está pronto. Execute build_knowledge_base() primeiro.",
-                "sources": []
+                "answer":  "❌ Sistema não está pronto. Construa a base de conhecimento primeiro.",
+                "sources": [],
             }
-        return self.llm_chain.query(question)
+        return self.llm_chain.query(question, knowledge_mode=knowledge_mode)
 
     def get_status(self) -> dict:
         return {
-            "embeddings_ready": True,
+            "embeddings_ready":   True,
             "vector_store_ready": self.retriever_ready,
-            "llm_ready": self.llm_chain is not None,
-            "system_ready": self.retriever_ready and self.llm_chain is not None,
+            "llm_ready":          self.llm_chain is not None,
+            "system_ready":       self.retriever_ready and self.llm_chain is not None,
+            "model":              self.model_name,
+            "knowledge_mode":     self.knowledge_mode,
         }
 
 
-# ─── Teste standalone ─────────────────────────────────────────────────────────
+# ── Teste standalone ───────────────────────────────────────────────────────────
 if __name__ == "__main__":
     rag = RAGSystem()
-
-    print("\n📊 Status do Sistema:")
+    print("\n📊 Status:")
     print(rag.get_status())
-
-    # rag.build_knowledge_base()
-    # result = rag.query("Sua pergunta aqui")
-    # print(result)

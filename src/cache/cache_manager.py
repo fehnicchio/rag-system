@@ -193,6 +193,88 @@ class CacheManager:
                 'total_cache_hits': 0,
                 'hit_rate': 0
             }
+    def get_semantic(self, question: str, similarity_threshold: float = 0.92):
+        """
+        Busca semântica no cache usando embeddings.
+        Retorna resposta se encontrar pergunta similar acima do threshold.
+        
+        Args:
+            question:             Pergunta atual
+            similarity_threshold: Similaridade mínima (0-1). 0.92 = muito similar
+        
+        Returns:
+            Dict com resposta ou None
+        """
+        try:
+            import numpy as np
+            from langchain_huggingface import HuggingFaceEmbeddings
+            
+            # Inicializar embeddings se necessário
+            if not hasattr(self, '_embeddings'):
+                self._embeddings = HuggingFaceEmbeddings(
+                    model_name='sentence-transformers/all-MiniLM-L6-v2',
+                    encode_kwargs={'normalize_embeddings': True}
+                )
+            
+            # Embeddar pergunta atual
+            query_embedding = np.array(self._embeddings.embed_query(question))
+            
+            # Buscar todas as perguntas em cache
+            conn = sqlite3.connect(self.cache_db)
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, question_text, answer, sources, hit_count FROM response_cache")
+            rows = cursor.fetchall()
+            conn.close()
+            
+            if not rows:
+                return None
+            
+            # Calcular similaridade com cada pergunta em cache
+            best_score = 0
+            best_row   = None
+            
+            for row in rows:
+                cache_id, cached_q, answer, sources_json, hit_count = row
+                cached_embedding = np.array(self._embeddings.embed_query(cached_q))
+                similarity = float(np.dot(query_embedding, cached_embedding))
+                
+                if similarity > best_score:
+                    best_score = similarity
+                    best_row   = row
+            
+            if best_score >= similarity_threshold and best_row:
+                cache_id, cached_q, answer, sources_json, hit_count = best_row
+                
+                # Atualizar contador
+                conn = sqlite3.connect(self.cache_db)
+                cursor = conn.cursor()
+                cursor.execute(
+                    "UPDATE response_cache SET accessed_at = CURRENT_TIMESTAMP, hit_count = hit_count + 1 WHERE id = ?",
+                    (cache_id,)
+                )
+                conn.commit()
+                conn.close()
+                
+                sources = json.loads(sources_json) if sources_json else []
+                logger.info(
+                    f"✅ Cache Semântico HIT: similaridade={best_score:.3f} "
+                    f"| '{cached_q[:50]}...' → '{question[:50]}...'"
+                )
+                
+                return {
+                    'answer':     answer,
+                    'sources':    sources,
+                    'from_cache': True,
+                    'similarity': best_score,
+                    'cached_question': cached_q,
+                }
+            
+            logger.info(f"⏭️ Cache Semântico MISS: melhor score={best_score:.3f} < {similarity_threshold}")
+            return None
+        
+        except Exception as e:
+            logger.error(f"Erro no cache semântico: {e}")
+            return None
 
 # Teste
 if __name__ == "__main__":

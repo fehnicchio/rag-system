@@ -4,119 +4,13 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
-class RAGChain:
-    """
-    Cadeia de RAG (Retrieval + Generation) com aprendizado contínuo.
-
-    A cada query, carrega do LearningStore:
-      • Regras de comportamento  → adicionadas ao system prompt
-      • Exemplos few-shot        → mostram ao modelo como responder bem
-    Isso faz as correções dos usuários serem aplicadas automaticamente
-    em todas as respostas futuras.
-    """
-
-    # Quantos exemplos few-shot injetar por prompt (evitar context overflow)
-    MAX_FEW_SHOT_EXAMPLES = 3
-
-    def __init__(self, retriever, api_key, temperature=0.7, max_tokens=500):
-        """
-        Args:
-            retriever:    Retriever do FAISS (com reranking)
-            api_key:      OpenAI API key (mantido por compatibilidade)
-            temperature:  Criatividade do LLM (0–1)
-            max_tokens:   Tamanho máximo da resposta
-        """
-        logger.info("Inicializando LLM...")
-
-        try:
-            self.llm = OllamaLLM(model="mistral", temperature=temperature)
-            logger.info("✅ LLM Ollama carregado (Mistral)")
-        except Exception as e:
-            logger.error(f"Erro ao carregar LLM: {e}")
-            raise
-
-        self.retriever = retriever
-
-        # Carregar LearningStore (sem falhar se ainda não existir)
-        try:
-            from src.learning.learning_store import LearningStore
-            self.learning_store = LearningStore()
-            logger.info("✅ LearningStore conectado ao RAGChain")
-        except Exception as e:
-            logger.warning(f"⚠️  LearningStore não disponível: {e}")
-            self.learning_store = None
-
-        logger.info("✅ RAG Chain pronto")
-
-    # ── Construção do prompt ──────────────────────────────────────────────────
-
-    def _build_rules_block(self) -> str:
-        """
-        Retorna o bloco de regras aprendidas para injetar no prompt.
-        Vazio se não houver regras.
-        """
-        if not self.learning_store:
-            return ""
-
-        rules = self.learning_store.load_rules()
-        if not rules:
-            return ""
-
-        rules_text = "\n".join(f"- {r['rule']}" for r in rules)
-        return f"""
-REGRAS DE COMPORTAMENTO APRENDIDAS (siga obrigatoriamente):
-{rules_text}
-"""
-
-    def _build_examples_block(self) -> str:
-        """
-        Retorna o bloco de exemplos few-shot para injetar no prompt.
-        Vazio se não houver exemplos.
-        """
-        if not self.learning_store:
-            return ""
-
-        examples = self.learning_store.load_examples(limit=self.MAX_FEW_SHOT_EXAMPLES)
-        if not examples:
-            return ""
-
-        block = "\nEXEMPLOS DE RESPOSTAS DE QUALIDADE (baseados em correções de usuários reais):\n"
-        for i, ex in enumerate(examples, 1):
-            block += f"""
-Exemplo {i}:
-  Pergunta: {ex['question']}
-  Resposta correta: {ex['good_answer']}
-"""
-        block += "\n"
-        return block
-
-    def _build_prompt(self, question: str, context: str) -> str:
-        """
-        Monta o prompt completo com:
-          1. Instrução base
-          2. Regras aprendidas (se houver)
-          3. Exemplos few-shot (se houver)
-          4. Contexto dos documentos
-          5. Pergunta
-        """
-        rules_block    = self._build_rules_block()
-        examples_block = self._build_examples_block()
-
-        has_learning = bool(rules_block or examples_block)
-        if has_learning:
-            logger.debug("🧠 Injetando aprendizado no prompt")
-
-        return f"""Você é um assistente inteligente especializado em análise de documentos.
-Priorize responder com base nos documentos fornecidos.
-Apenas se a resposta NÃO estiver nos documentos, use seu conhecimento geral.
-SEMPRE indique a fonte da informação.
-
-Se a resposta está no documento:
-"Segundo os documentos: [resposta] (Fonte: nome_do_doc)"
-
-Se usou conhecimento geral:
-"Nos documentos não encontrei, mas geralmente: [resposta]"
+# Prompts por modo de conhecimento
+PROMPTS = {
+    'docs_only': """Você é um assistente especializado em análise de documentos.
+Responda APENAS com base no contexto dos documentos fornecidos.
+Se a resposta não estiver nos documentos, diga claramente:
+"Não encontrei essa informação nos documentos carregados."
+Sempre indique a fonte: "Segundo os documentos: [resposta]"
 {rules_block}{examples_block}
 CONTEXTO DOS DOCUMENTOS:
 {context}
@@ -124,32 +18,155 @@ CONTEXTO DOS DOCUMENTOS:
 PERGUNTA:
 {question}
 
-RESPOSTA:"""
+RESPOSTA:""",
 
-    # ── Query principal ───────────────────────────────────────────────────────
+    'hybrid': """Você é um assistente inteligente especializado em análise de documentos.
+Priorize responder com base nos documentos fornecidos.
+Apenas se a resposta NÃO estiver nos documentos, use seu conhecimento geral.
+SEMPRE indique a origem da informação:
 
-    def query(self, question: str) -> dict:
+Se está nos documentos: "Segundo os documentos: [resposta] (Fonte: nome)"
+Se usou conhecimento geral: "Nos documentos não encontrei, mas geralmente: [resposta]"
+{rules_block}{examples_block}
+CONTEXTO DOS DOCUMENTOS:
+{context}
+
+PERGUNTA:
+{question}
+
+RESPOSTA:""",
+}
+
+
+class RAGChain:
+    """
+    Cadeia de RAG com suporte a múltiplos modelos Ollama,
+    modos de conhecimento e aprendizado contínuo via few-shot.
+    """
+
+    MAX_FEW_SHOT_EXAMPLES = 3
+
+    def __init__(
+        self,
+        retriever,
+        api_key=None,
+        temperature=0.7,
+        max_tokens=500,
+        model_name='mistral',
+        knowledge_mode='docs_only',
+    ):
         """
-        Faz uma pergunta ao RAG, com aprendizado aplicado automaticamente.
+        Args:
+            retriever:       Retriever com re-ranking
+            api_key:         Mantido por compatibilidade (não usado com Ollama)
+            temperature:     Criatividade do LLM (0–1)
+            max_tokens:      Tamanho máximo da resposta
+            model_name:      Nome do modelo Ollama
+            knowledge_mode:  'docs_only' | 'hybrid'
+        """
+        self.model_name     = model_name
+        self.knowledge_mode = knowledge_mode
+        self.retriever      = retriever
+
+        logger.info(f"Inicializando LLM: model={model_name} | mode={knowledge_mode}")
+        self._load_llm(model_name, temperature)
+
+        # LearningStore (opcional)
+        try:
+            from src.learning.learning_store import LearningStore
+            self.learning_store = LearningStore()
+            logger.info("✅ LearningStore conectado")
+        except Exception as e:
+            logger.warning(f"⚠️ LearningStore não disponível: {e}")
+            self.learning_store = None
+
+        logger.info("✅ RAGChain pronto")
+
+    # ── Carregamento do LLM ───────────────────────────────────────────────────
+
+    def _load_llm(self, model_name: str, temperature: float = 0.7):
+        """Carrega (ou recarrega) o LLM Ollama."""
+        try:
+            self.llm = OllamaLLM(model=model_name, temperature=temperature)
+            logger.info(f"✅ LLM Ollama carregado: {model_name}")
+        except Exception as e:
+            logger.error(f"Erro ao carregar LLM '{model_name}': {e}")
+            raise
+
+    def change_model(self, new_model: str, temperature: float = 0.7):
+        """Troca o modelo em runtime sem reiniciar todo o sistema."""
+        logger.info(f"🔄 Trocando modelo: {self.model_name} → {new_model}")
+        self._load_llm(new_model, temperature)
+        self.model_name = new_model
+        logger.info(f"✅ Modelo alterado para: {new_model}")
+
+    def change_knowledge_mode(self, new_mode: str):
+        """Troca o modo de conhecimento em runtime."""
+        if new_mode not in PROMPTS:
+            raise ValueError(f"Modo inválido: {new_mode}. Use: {list(PROMPTS.keys())}")
+        self.knowledge_mode = new_mode
+        logger.info(f"✅ Modo de conhecimento alterado para: {new_mode}")
+
+    # ── Blocos de aprendizado ─────────────────────────────────────────────────
+
+    def _build_rules_block(self) -> str:
+        if not self.learning_store:
+            return ""
+        rules = self.learning_store.load_rules()
+        if not rules:
+            return ""
+        rules_text = "\n".join(f"- {r['rule']}" for r in rules)
+        return f"\nREGRAS DE COMPORTAMENTO (siga obrigatoriamente):\n{rules_text}\n"
+
+    def _build_examples_block(self) -> str:
+        if not self.learning_store:
+            return ""
+        examples = self.learning_store.load_examples(limit=self.MAX_FEW_SHOT_EXAMPLES)
+        if not examples:
+            return ""
+        block = "\nEXEMPLOS DE RESPOSTAS DE QUALIDADE:\n"
+        for i, ex in enumerate(examples, 1):
+            block += f"\nExemplo {i}:\n  Pergunta: {ex['question']}\n  Resposta: {ex['good_answer']}\n"
+        return block + "\n"
+
+    # ── Query ─────────────────────────────────────────────────────────────────
+
+    def query(self, question: str, knowledge_mode: str = None) -> dict:
+        """
+        Faz uma pergunta ao RAG.
+
+        Args:
+            question:       Pergunta do usuário
+            knowledge_mode: Sobrescreve o modo padrão se informado
 
         Returns:
             {"answer": str, "sources": list[dict]}
         """
-        try:
-            logger.info(f"Processando pergunta: {question}")
+        mode = knowledge_mode or self.knowledge_mode
 
-            # 1. Recuperar documentos (FAISS + Cross-Encoder reranker)
+        try:
+            logger.info(f"Processando: '{question[:80]}' | modelo={self.model_name} | modo={mode}")
+
+            # 1. Recuperar documentos
             docs = self.retriever.invoke(question)
 
             # 2. Montar contexto
             context = "\n\n---\n\n".join(doc.page_content for doc in docs)
 
-            # 3. Construir prompt com aprendizado injetado
-            prompt = self._build_prompt(question, context)
+            # 3. Selecionar template de prompt
+            template = PROMPTS.get(mode, PROMPTS['hybrid'])
 
-            # 4. Gerar resposta
+            # 4. Preencher prompt
+            prompt = template.format(
+                rules_block    = self._build_rules_block(),
+                examples_block = self._build_examples_block(),
+                context        = context,
+                question       = question,
+            )
+
+            # 5. Gerar resposta
             response = self.llm.invoke(prompt)
-            answer = response.content if hasattr(response, "content") else str(response)
+            answer   = response.content if hasattr(response, "content") else str(response)
 
             return {
                 "answer": answer,
@@ -171,27 +188,18 @@ RESPOSTA:"""
 
     # ── Utilitários ───────────────────────────────────────────────────────────
 
-    def reload_learning(self) -> None:
-        """
-        Força o recarregamento do LearningStore.
-        Útil para aplicar novo aprendizado sem reiniciar o sistema.
-        """
+    def reload_learning(self):
+        """Força recarregamento do LearningStore (log apenas)."""
         if self.learning_store:
-            logger.info("🔄 Recarregando aprendizado no RAGChain...")
-            # LearningStore lê do disco a cada chamada, então basta logar
             summary = self.learning_store.get_summary()
             logger.info(
-                f"   Regras: {summary['rules_count']} | "
-                f"Exemplos: {summary['examples_count']}"
+                f"🔄 Aprendizado recarregado: "
+                f"{summary['rules_count']} regras | {summary['examples_count']} exemplos"
             )
-        else:
-            logger.warning("LearningStore não está disponível.")
 
     def get_learning_status(self) -> dict:
-        """Retorna o estado atual do aprendizado injetado nas respostas."""
         if not self.learning_store:
             return {"available": False}
-
         summary = self.learning_store.get_summary()
         return {
             "available":      True,
@@ -200,7 +208,16 @@ RESPOSTA:"""
             "rules":          self.learning_store.load_rules(),
         }
 
+    def get_status(self) -> dict:
+        return {
+            "model":          self.model_name,
+            "knowledge_mode": self.knowledge_mode,
+            "learning":       self.get_learning_status(),
+        }
 
-# Teste
+
+# ── Teste standalone ───────────────────────────────────────────────────────────
 if __name__ == "__main__":
     print("✅ LLMChain pronto para usar")
+    print("Modelos disponíveis via Ollama: mistral, llama2, neural-chat, openchat, deepseek-r1")
+    print("Modos: docs_only, hybrid")
