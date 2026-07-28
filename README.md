@@ -45,10 +45,10 @@ data/documents/
 ### 5. Rode
 
 ```bash
-streamlit run app.py
+python setup.py --run
 ```
 
-Abra http://localhost:8501 no navegador.
+Abra http://localhost:8000 no navegador.
 
 ## 📁 Estrutura do Projeto
 
