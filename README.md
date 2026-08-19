@@ -45,10 +45,10 @@ data/documents/
 ### 5. Rode
 
 ```bash
-streamlit run app.py
+python setup.py --run
 ```
 
-Abra http://localhost:8501 no navegador.
+Abra http://localhost:8000 no navegador.
 
 ## 📁 Estrutura do Projeto
 
@@ -154,7 +154,12 @@ retrieval:
 
 ## 📝 Licença
 
-MIT
+Este projeto está licenciado sob a **PolyForm Noncommercial License 1.0.0** — livre para uso pessoal, educacional e de pesquisa.
+
+### Uso Comercial
+O uso comercial deste código é estritamente proibido sob esta licença. Se você tem interesse em utilizar este projeto ou parte dele em um produto comercial, SaaS ou de negócios, entre em contato para adquirir uma **licença comercial**:
+
+- **E-mail:** fh.nicchio@gmail.com
 
 ## 👨‍💻 Autor
 
