@@ -25,59 +25,78 @@ class VectorStore:
     
     def load_documents(self, document_paths, chunk_size=500, chunk_overlap=50):
         """
-        Carregar documentos de vários formatos
-        
-        Args:
-            document_paths: Lista de caminhos de documentos
-            chunk_size: Tamanho do chunk
-            chunk_overlap: Sobreposição entre chunks
-        
-        Returns:
-            Lista de documentos divididos
+        Carregar documentos de vários formatos com chunking inteligente.
+        Prioriza divisão por parágrafos e seções naturais.
         """
         documents = []
-        
+
         for path in document_paths:
             logger.info(f"Carregando: {path}")
-            
+
             try:
                 if path.endswith('.pdf'):
                     loader = PDFPlumberLoader(path)
                     documents.extend(loader.load())
-                
-                elif path.endswith('.txt'):
+
+                elif path.endswith('.txt') or path.endswith('.md'):
                     loader = TextLoader(path, encoding='utf-8')
                     documents.extend(loader.load())
-                
-                elif path.endswith('.md'):
-                    loader = TextLoader(path, encoding='utf-8')
-                    documents.extend(loader.load())
-                
+
                 else:
                     logger.warning(f"Formato não suportado: {path}")
                     continue
-                
+
                 logger.info(f"✅ {path} carregado ({len(documents)} docs)")
-            
+
             except Exception as e:
                 logger.error(f"Erro ao carregar {path}: {e}")
                 continue
-        
+
         if not documents:
             logger.warning("Nenhum documento foi carregado")
             return []
-        
-        # Split em chunks
-        logger.info(f"Dividindo {len(documents)} documentos em chunks...")
+
+        logger.info(f"Dividindo {len(documents)} documentos em chunks inteligentes...")
+
+        # ── Estratégia de chunking em camadas ──────────────────────────────────
+        # Tenta preservar estrutura natural do texto:
+        # 1. Divide por seções (##, ---) 
+        # 2. Depois por parágrafos (\n\n)
+        # 3. Depois por frases (. ! ?)
+        # 4. Só usa tamanho fixo como último recurso
         splitter = RecursiveCharacterTextSplitter(
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap,
-            separators=["\n\n", "\n", " ", ""]
+            separators=[
+                "\n\n\n",   # Seções grandes
+                "\n\n",     # Parágrafos
+                "\n",       # Quebras de linha
+                ". ",       # Fim de frase
+                "! ",       # Fim de exclamação
+                "? ",       # Fim de pergunta
+                "; ",       # Ponto e vírgula
+                ", ",       # Vírgula
+                " ",        # Palavra
+                "",         # Caractere (último recurso)
+            ],
+            keep_separator=True,  # Mantém separadores para contexto
         )
-        
+
         chunked_docs = splitter.split_documents(documents)
-        logger.info(f"✅ {len(chunked_docs)} chunks criados")
-        
+
+        # Filtrar chunks muito pequenos (menos de 50 chars — ruído)
+        chunked_docs = [
+            doc for doc in chunked_docs
+            if len(doc.page_content.strip()) >= 50
+        ]
+
+        logger.info(f"✅ {len(chunked_docs)} chunks criados (inteligente)")
+
+        # Log de exemplo para verificar qualidade
+        if chunked_docs:
+            sample = chunked_docs[0].page_content[:150]
+            logger.info(f"  Exemplo de chunk: '{sample}...'")
+
         return chunked_docs
     
     def build_index(self, documents, save=True):

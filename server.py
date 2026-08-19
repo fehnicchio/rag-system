@@ -357,10 +357,17 @@ def query(req: QueryRequest):
 # ─── Feedback ──────────────────────────────────────────────────────────────────
 @app.post("/api/feedback")
 def submit_feedback(req: FeedbackRequest):
-    has_rating = req.is_helpful is not None
+    has_rating  = req.is_helpful is not None
     has_comment = bool(req.comment and req.comment.strip())
+
     if not has_rating and not has_comment:
         raise HTTPException(status_code=400, detail="Adicione uma avaliação ou comentário.")
+
+    # Verificar se interaction_id existe
+    recent = state.db.get_recent_interactions(limit=999999)
+    valid_ids = {row[0] for row in recent}
+    if req.interaction_id not in valid_ids:
+        raise HTTPException(status_code=404, detail=f"Interação {req.interaction_id} não encontrada.")
 
     state.db.save_feedback(
         interaction_id=req.interaction_id,
@@ -370,6 +377,43 @@ def submit_feedback(req: FeedbackRequest):
     state.feedback_submitted.add(req.interaction_id)
     return {"success": True}
 
+@app.post("/api/feedback")
+async def save_feedback(request: FeedbackRequest):
+    """Salvar feedback do usuário."""
+    try:
+        # Validar se interaction_id existe no banco
+        recent = state.db.get_recent_interactions(limit=10000)
+        valid_ids = {row[0] for row in recent}  # IDs existentes
+
+        if request.interaction_id not in valid_ids:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Interação {request.interaction_id} não encontrada"
+            )
+
+        # Validar que tem rating ou comentário
+        has_rating  = request.is_helpful is not None
+        has_comment = bool(request.comment and request.comment.strip())
+
+        if not has_rating and not has_comment:
+            raise HTTPException(
+                status_code=400,
+                detail="Forneça uma avaliação ou comentário"
+            )
+
+        state.db.save_feedback(
+            interaction_id=request.interaction_id,
+            is_helpful=request.is_helpful,
+            comment=request.comment
+        )
+
+        return {"status": "ok", "message": "Feedback salvo com sucesso"}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erro ao salvar feedback: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 # ─── Histórico ─────────────────────────────────────────────────────────────────
 @app.get("/api/history")

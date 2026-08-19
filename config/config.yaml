@@ -20,8 +20,8 @@ documents:
     - txt
     - docx
     - md
-  chunk_size: 500
-  chunk_overlap: 50
+  chunk_size: 800
+  chunk_overlap: 100
 
 paths:
   documents: data/documents
