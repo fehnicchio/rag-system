@@ -1,0 +1,280 @@
+{
+  "metadata": {
+    "timestamp": "2026-08-19T19:21:50.134709",
+    "dataset": "explodinggradients/amnesty_qa english_v3",
+    "total_samples": 10,
+    "model": "mistral",
+    "ragas_used": false
+  },
+  "basic_metrics": {
+    "answer_similarity": 0.36,
+    "has_sources_rate": 1.0,
+    "avg_response_time_s": 113.85,
+    "total_questions": 10,
+    "errors": 0,
+    "success_rate": 1.0
+  },
+  "ragas_metrics": {},
+  "results": [
+    {
+      "question": "What are the global implications of the USA Supreme Court ruling on abortion?",
+      "ground_truth": "The global implications of the USA Supreme Court ruling on abortion are significant. The ruling has led to limited or no access to abortion for one in three women and girls of reproductive age in states where abortion access is restricted. These states also have weaker maternal health support, higher maternal death rates, and higher child poverty rates. Additionally, the ruling has had an impact beyond national borders due to the USA's geopolitical and cultural influence globally. Organizations and activists worldwide are concerned that the ruling may inspire anti-abortion legislative and policy attacks in other countries. The ruling has also hindered progressive law reform and the implementation of abortion guidelines in certain African countries. Furthermore, the ruling has created a chilling effect in international policy spaces, empowering anti-abortion actors to undermine human rights protections.",
+      "answer": " \"The USA Supreme Court ruling on abortion has potential implications on a global scale. It could influence the policies and attitudes towards abortion in other nations, particularly through impacts on international organizations and non-governmental groups that work on reproductive rights and women's health issues. The ruling may lead to shifts in funding, advocacy efforts, and collaborations with American counterparts, potentially causing ripple effects in the global fight for reproductive justice. Additionally, there are concerns that the ruling could lay the groundwork for anti-abortion legislative and policy attacks in other countries, and create a chilling effect in international policy spaces. [resposta], com base nos documentos carregados.",
+      "sources": [
+        {
+          "content": "The USA Supreme Court ruling on abortion has sparked intense debates and discussions not only within the country but also around the world. Many countries look to the United States as a leader in lega",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "- In 2022, the USA Supreme Court handed down a decision ruling that overturned 50 years of jurisprudence recognizing a constitutional right to abortion.\n- This decision has had a massive impact: one i",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "- SRR organizations and activists across the world have expressed fear about the ruling laying the groundwork for anti-abortion legislative and policy attacks in other countries.\n- Advocates have also",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        }
+      ],
+      "reference_contexts": [
+        "- In 2022, the USA Supreme Court handed down a decision ruling that overturned 50 years of jurisprudence recognizing a constitutional right to abortion.\n- This decision has had a massive impact: one in three women and girls of reproductive age now live in states where abortion access is either totally or near-totally inaccessible.\n- The states with the most restrictive abortion laws have the weakest maternal health support, higher maternal death rates, and higher child poverty rates.\n- The USA Supreme Court ruling has also had impacts beyond national borders due to the geopolitical and cultural influence wielded by the USA globally and the aid it funds.\n- SRR organizations and activists across the world have expressed fear about the ruling laying the groundwork for anti-abortion legislative and policy attacks in other countries.\n- Advocates have also observed the ruling's impact on progressive law reform and the stalling of the adoption and enforcement of abortion guidelines in certain African countries.\n- The ruling has created a chilling effect in international policy spaces, emboldening anti-abortion state and non-state actors to undermine human rights protections.",
+        "The USA Supreme Court ruling on abortion has sparked intense debates and discussions not only within the country but also around the world. Many countries look to the United States as a leader in legal and social issues, so the decision could potentially influence the policies and attitudes towards abortion in other nations.",
+        "The ruling may also impact international organizations and non-governmental groups that work on reproductive rights and women's health issues. Depending on the outcome, there could be shifts in funding, advocacy efforts, and collaborations with American counterparts, leading to ripple effects in the global fight for reproductive justice."
+      ],
+      "response_time": 169.48594760894775,
+      "error": false
+    },
+    {
+      "question": "Which companies are the main contributors to GHG emissions and their role in global warming according to the Carbon Majors database?",
+      "ground_truth": "According to the Carbon Majors database, the main contributors to GHG emissions and their role in global warming are fossil fuel companies. These companies, both state-owned and private, have produced almost a trillion tons of GHG emissions in 150 years. The database shows that 100 existing fossil fuel companies, along with eight that no longer exist, are responsible for 71% of all GHG emissions since 1988. In the Americas, the private companies that have contributed the most emissions are ExxonMobil, Chevron, and Peabody, all from the United States. Among state-owned companies in the Americas, the largest emitter is Mexican company Pemex, followed by Venezuelan company Petróleos de Venezuela, S.A. It is important to note that while people with fewer resources, particularly from countries in the global South, do not significantly contribute to climate change, they are the ones most affected by its impacts. Approximately half of the global population lives in areas that are \"very vulnerable\" to climate change, and it is people with limited development opportunities who face the greatest risks. This unequal impact disproportionately affects the human rights of those with fewer resources and greater vulnerability in the context of climate change in the global South. Additionally, between 2010 and 2020, human mortality due to climate disasters was 15 times higher in vulnerable regions and populations.",
+      "answer": " According to the Carbon Majors database, the main contributors to GHG emissions are 100 existing fossil fuel companies (and eight that no longer exist). These companies are responsible for 71% of all GHG emissions since 1988. In the Americas, the private companies responsible for the most emissions during this period, according to the database, are ExxonMobil, Chevron, and Peabody from the United States, and the largest emitter amongst state-owned companies in the Americas is Mexican company Pemex, followed by Venezuelan company Petróleos de Venezuela, S.A. [resposta], com base nos documentos.",
+      "sources": [
+        {
+          "content": "The Carbon Majors database identifies a small group of companies responsible for the majority of global greenhouse gas emissions. These companies include major oil and gas producers, as well as coal m",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "- Fossil fuel companies, whether state or private, play a key role in the emissions that drive global warming.\n- According to the Carbon Majors database, 100 existing fossil fuel companies (and eight ",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "In recent years, there has been increasing pressure on these major contributors to reduce their greenhouse gas emissions and transition to more sustainable practices. Many of these companies have made",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        }
+      ],
+      "reference_contexts": [
+        "In recent years, there has been increasing pressure on these major contributors to reduce their greenhouse gas emissions and transition to more sustainable practices. Many of these companies have made commitments to reduce their carbon footprint and invest in renewable energy sources. However, the role of these companies in global warming remains a contentious issue, with ongoing debates about their responsibility and accountability for the environmental damage caused by their operations.",
+        "The Carbon Majors database identifies a small group of companies responsible for the majority of global greenhouse gas emissions. These companies include major oil and gas producers, as well as coal mining companies, whose activities have significantly contributed to climate change. The data from the Carbon Majors database highlights the disproportionate impact of these companies on the environment and the urgent need for action to address their emissions.",
+        "- Fossil fuel companies, whether state or private, play a key role in the emissions that drive global warming.\n- According to the Carbon Majors database, 100 existing fossil fuel companies (and eight that no longer exist) have produced almost a trillion tons of GHG emissions in 150 years.\n- These 100 companies are responsible for 71% of all GHG emissions since 1988.\n- In the Americas, the private companies responsible for the most emissions during this period, according to the database, are from the United States: ExxonMobil, Chevron, and Peabody.\n- The largest emitter amongst state-owned companies in the Americas is Mexican company Pemex, followed by Venezuelan company Petróleos de Venezuela, S.A.\n- Despite the fact that people with fewer resources, in particular from countries in the global South, do not make significant contributions to climate change, it is these people who are most affected by it.\n- Approximately half of the global population lives in areas that are \"very vulnerable\" to climate change, and it is people with considerable development constraints who are most exposed.\n- This disproportionately affects the human rights of people with fewer resources and greater risk in the context of climate change in the global South.\n- Between 2010 and 2020, human mortality due to climate disasters was 15 times higher in vulnerable regions and populations."
+      ],
+      "response_time": 142.734760761261,
+      "error": false
+    },
+    {
+      "question": "Which private companies in the Americas are the largest GHG emitters according to the Carbon Majors database?",
+      "ground_truth": "The largest private companies in the Americas that are the largest GHG emitters according to the Carbon Majors database are ExxonMobil, Chevron, and Peabody.",
+      "answer": " A partir dos documentos, os três principais emissores de GHG entre as empresas privadas na América, de acordo com o banco de dados Carbon Majors, são ExxonMobil, Chevron e Peabody.",
+      "sources": [
+        {
+          "content": "- Fossil fuel companies, whether state or private, play a key role in the emissions that drive global warming.\n- According to the Carbon Majors database, 100 existing fossil fuel companies (and eight ",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "The private companies responsible for the most emissions during this period, according to the database, are from the United States: ExxonMobil, Chevron and Peabody.\nThe largest emitter amongst state-o",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "The Carbon Majors database identifies a small group of companies responsible for the majority of global greenhouse gas emissions. These companies include major oil and gas producers, as well as coal m",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        }
+      ],
+      "reference_contexts": [
+        "The issue of greenhouse gas emissions has become a major concern for environmentalists and policymakers alike, as the impact of climate change becomes more apparent. Private companies in the Americas play a significant role in contributing to these emissions, with some being identified as the largest emitters in the region according to the Carbon Majors database.",
+        "Reducing greenhouse gas emissions from private companies is a complex challenge that requires cooperation between governments, businesses, and consumers. Many companies are now taking steps to reduce their carbon footprint through initiatives such as investing in renewable energy, improving energy efficiency, and offsetting emissions through carbon credits.",
+        "The private companies responsible for the most emissions during this period, according to the database, are from the United States: ExxonMobil, Chevron and Peabody.\nThe largest emitter amongst state-owned companies in the Americas is Mexican company Pemex, followed by Venezuelan company Petróleos de Venezuela, S.A."
+      ],
+      "response_time": 95.66728734970093,
+      "error": false
+    },
+    {
+      "question": "What action did Amnesty International urge its supporters to take in response to the killing of the Ogoni 9?",
+      "ground_truth": "Amnesty International urged its supporters to send appeals for the defenders' freedom to Nigerian authorities and later to send letters of outrage.",
+      "answer": " Amnesty International urged its supporters to sign petitions, write letters to government officials, and participate in protests and demonstrations, as well as to raise awareness about the plight of the Ogoni people and the need for justice and accountability in their case, [resposta], com base nos documentos.",
+      "sources": [
+        {
+          "content": "In the case of the Ogoni 9, Amnesty International called on its supporters to take action by signing petitions, writing letters to government officials, and participating in protests and demonstration",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "Amnesty International is a global human rights organization known for its advocacy work on behalf of individuals facing injustice and persecution. The organization has a long history of campaigning fo",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "In recent years, Amnesty International has focused on issues such as the increasing threats faced by human rights defenders, particularly in authoritarian regimes, and the need for stronger internatio",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        }
+      ],
+      "reference_contexts": [
+        "In the case of the Ogoni 9, Amnesty International called on its supporters to take action by signing petitions, writing letters to government officials, and participating in protests and demonstrations. The organization also urged its members to raise awareness about the plight of the Ogoni people and the need for justice and accountability in their case. By mobilizing public pressure and solidarity, Amnesty International hoped to bring attention to the human rights abuses committed against the Ogoni 9 and to push for meaningful change and accountability.",
+        "Amnesty International called on its vast network of supporters to deluge Nigerian authorities first with appeals for the defenders’ freedom, and later with letters of outrage.",
+        "Amnesty International is a global human rights organization known for its advocacy work on behalf of individuals facing injustice and persecution. The organization has a long history of campaigning for the rights of prisoners of conscience, political dissidents, and marginalized communities around the world. Through its research, lobbying efforts, and grassroots activism, Amnesty International seeks to hold governments and other powerful entities accountable for human rights violations and abuses."
+      ],
+      "response_time": 94.76067113876343,
+      "error": false
+    },
+    {
+      "question": "What are the recommendations made by Amnesty International to the Special Rapporteur on Human Rights Defenders?",
+      "ground_truth": "The recommendations made by Amnesty International to the Special Rapporteur on Human Rights Defenders include embedding a focus on child and young HRDs in future work, raising awareness about the differences and challenges they face, incorporating age disaggregated data in reports, and creating safe spaces for engagement.",
+      "answer": " Os seguintes são as recomendações feitas pela Amnesty International ao Special Rapporteur on the Situation of Human Rights Defenders:\n\n1. A inclusão de um foco em human rights defenders (HRDs) crianças e jovens no trabalho futuro da mandate.\n2. Aumentar a conscientização sobre as diferenças entre HRDs crianças e jovens, e os diferentes contextos, necessidades, barragens e desafios que eles enfrentam.\n3. A incorporação de dados agregados por idade em todos os relatórios ou intervenções futuras pelo Special Rapporteur.\n4. A criação de espaços seguros online e presenciais para HRDs crianças e jovens e suas organizações crianças e juvenis para interagir ativamente com o Special Rapporteur e outras mecanismos de direitos humanos.\n\nFonte: os documentos fornecidos.",
+      "sources": [
+        {
+          "content": "In recent years, Amnesty International has focused on issues such as the increasing threats faced by human rights defenders, particularly in authoritarian regimes, and the need for stronger internatio",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "Amnesty International recommends that the Special Rapporteur on the Situation of Human Rights Defenders embeds a focus on child and young HRDs in the future work of the mandate. \nAmnesty International",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "Amnesty International is known for its advocacy work on behalf of human rights defenders around the world. The organization often provides detailed reports and recommendations to the Special Rapporteu",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        }
+      ],
+      "reference_contexts": [
+        "In recent years, Amnesty International has focused on issues such as the increasing threats faced by human rights defenders, particularly in authoritarian regimes, and the need for stronger international mechanisms to support and protect their work. The organization's recommendations to the Special Rapporteur often include calls for greater accountability for perpetrators of violence and harassment against defenders, as well as measures to ensure their safety and freedom to carry out their important work.",
+        "Amnesty International recommends that the Special Rapporteur on the Situation of Human Rights Defenders embeds a focus on child and young HRDs in the future work of the mandate. \nAmnesty International recommends raising awareness about the differences between \"child\" and \"youth\" HRDs and the different context, needs, barriers, and challenges they face as defenders. \nAmnesty International recommends incorporating age disaggregated data on the lived experiences of child and young HRDs in all future reports or interventions by the Special Rapporteur. \nAmnesty International recommends creating online and face-to-face safe spaces for child and young HRDs and their child and youth-led organizations to actively engage with the Special and other human rights mechanisms.",
+        "Amnesty International is known for its advocacy work on behalf of human rights defenders around the world. The organization often provides detailed reports and recommendations to the Special Rapporteur on Human Rights Defenders, highlighting specific cases of abuse and calling for action to protect those at risk."
+      ],
+      "response_time": 180.93080067634583,
+      "error": false
+    },
+    {
+      "question": "Who are the target audience of the two books created by Amnesty International on child rights?",
+      "ground_truth": "The target audience of the two books created by Amnesty International on child rights are children and young people.",
+      "answer": " Os livros criados pela Amnesty International sobre direitos da criança têm como público alvo, além das crianças, também os pais, professores e cuidadores. [resposta], com base nos documentos",
+      "sources": [
+        {
+          "content": "Amnesty International has therefore created two simple books on child rights and how to claim them for self and others: (1) ‘Know Your Rights and Claim Them: A Guide for Youth’, by Amnesty Internation",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "Amnesty International's books on child rights are designed to educate and empower young readers about their rights and the importance of standing up for justice. The colorful illustrations and engagin",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "Amnesty International is known for its advocacy work on behalf of human rights defenders around the world. The organization often provides detailed reports and recommendations to the Special Rapporteu",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        }
+      ],
+      "reference_contexts": [
+        "In addition to children, parents, teachers, and caregivers are also key target audiences for Amnesty International's books on child rights. These adults play a crucial role in guiding and supporting children as they learn about their rights and responsibilities. By reading and discussing these books together, families and educators can help instill values of equality, respect, and compassion in the next generation.",
+        "Amnesty International's books on child rights are designed to educate and empower young readers about their rights and the importance of standing up for justice. The colorful illustrations and engaging storytelling make these books accessible to children of various ages and backgrounds, sparking their curiosity and empathy for others.",
+        "Amnesty International has therefore created two simple books on child rights and how to claim them for self and others: (1) ‘Know Your Rights and Claim Them: A Guide for Youth’, by Amnesty International, Angelina Jolie, Geraldine van Bueren (Andersen Press 2021); (2) ‘These Rights Are Your Rights: An empowering guide for children everywhere’, by Nicky Parker at Amnesty International (Andersen Press, 2024).\nThe objectives of the two books are to build children’s and young people’s understanding of their rights and give them the awareness and tools they need to take action."
+      ],
+      "response_time": 88.95296049118042,
+      "error": false
+    },
+    {
+      "question": "Which right guarantees access to comprehensive information about past human rights violations, including the identities of the perpetrators and the fate of the victims, as well as the circumstances surrounding the violations?",
+      "ground_truth": "The right that guarantees access to comprehensive information about past human rights violations, including the identities of the perpetrators and the fate of the victims, as well as the circumstances surrounding the violations, is the right to know the truth.",
+      "answer": " O direito à verdade garante o acesso à informação completa sobre violações passadas de direitos humanos, incluindo as identidades dos perpetradores e o destino das vítimas, assim como as circunstâncias envolvidas. [resposta], com base nos documentos.",
+      "sources": [
+        {
+          "content": "- The victims of gross human rights violations and their families, as well as members of society generally, have the right to know the whole truth about past human rights violations.\n- The right to tr",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "In many cases, the identities of perpetrators of human rights violations are shielded from public knowledge, either due to political reasons or lack of evidence. This lack of transparency can hinder e",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "The right to truth is a fundamental human right that seeks to uncover the full extent of past human rights violations and ensure accountability for those responsible. This right includes access to off",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        }
+      ],
+      "reference_contexts": [
+        "The right to truth is a fundamental human right that seeks to uncover the full extent of past human rights violations and ensure accountability for those responsible. This right includes access to official records, archives, and other sources of information that shed light on historical injustices and atrocities.",
+        "In many countries, the pursuit of truth and justice for past human rights violations is a complex and often contentious process. Governments, institutions, and individuals may resist efforts to uncover the truth, leading to challenges in achieving transparency and accountability. The right to truth is essential for promoting reconciliation, healing, and preventing future abuses.",
+        "26. The Act raises serious questions about its compatibility with the right to truth.\n27. At an individual level, victims and their families possess an inalienable and non-derogable right to know the truth regarding the circumstances and reasons behind human rights violations, including the identities of the perpetrators and, in cases of death or enforced disappearance, the fate of the victims.\nIn particular, the right to know the fate and whereabouts of ‘disappeared’ relatives has been confirmed in the jurisprudence of international and regional human rights bodies, as well as of national courts."
+      ],
+      "response_time": 99.52256608009338,
+      "error": false
+    },
+    {
+      "question": "Who has the right to be fully informed about human rights violations, including the identities of the perpetrators and the fate of the victims?",
+      "ground_truth": "The victims of gross human rights violations and their families, as well as members of society generally, have the right to be fully informed about human rights violations, including the identities of the perpetrators and the fate of the victims.",
+      "answer": " \"Victims, their families, and members of society generally have the right to be fully informed about human rights violations, including the identities of the perpetrators and the fate of the victims, [resposta], com base nos documentos.\"",
+      "sources": [
+        {
+          "content": "In many cases, the identities of perpetrators of human rights violations are shielded from public knowledge, either due to political reasons or lack of evidence. This lack of transparency can hinder e",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "- The victims of gross human rights violations and their families, as well as members of society generally, have the right to know the whole truth about past human rights violations.\n- The right to tr",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "The concept of universal human rights has evolved over centuries, with various international declarations and treaties outlining the fundamental rights that all individuals are entitled to. These righ",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        }
+      ],
+      "reference_contexts": [
+        "In many cases, the identities of perpetrators of human rights violations are shielded from public knowledge, either due to political reasons or lack of evidence. This lack of transparency can hinder efforts to seek justice for victims and hold those responsible accountable for their actions. The right to know the fate of victims is equally important, as it allows families and communities to grieve, seek closure, and work towards healing and reconciliation.",
+        "- The victims of gross human rights violations and their families, as well as members of society generally, have the right to know the whole truth about past human rights violations.\n- The right to truth is engaged by the violation of the rights to access to justice, remedy, and information.\n- Victims and their families possess an inalienable and non-derogable right to know the truth regarding the circumstances and reasons behind human rights violations, including the identities of the perpetrators and the fate of the victims.\n- The right to know the fate and whereabouts of 'disappeared' relatives has been confirmed in the jurisprudence of international and regional human rights bodies, as well as of national courts.",
+        "The concept of universal human rights has evolved over centuries, with various international declarations and treaties outlining the fundamental rights that all individuals are entitled to. These rights are considered inherent to all human beings, regardless of nationality, ethnicity, or any other distinguishing factor. The idea that everyone should be fully informed about human rights violations stems from the belief that transparency and accountability are essential for upholding these rights and preventing future abuses."
+      ],
+      "response_time": 86.84590411186218,
+      "error": false
+    },
+    {
+      "question": "When can individuals be found guilty under Article 207.3 of the Russian Criminal Code?",
+      "ground_truth": "Individuals can be found guilty under Article 207.3 of the Russian Criminal Code if their statements are contrary to the official position of the Russian authorities.",
+      "answer": " Individuals can be found guilty under Article 207.3 of the Russian Criminal Code when their statements are contrary to the official position of the Russian authorities, as stated in the provided documents.",
+      "sources": [
+        {
+          "content": "In addition to the legal implications, individuals found guilty under Article 207.3 may face severe penalties, including fines, imprisonment, or other restrictions on their rights and freedoms. The en",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "- As long as their statements are contrary to the official position of the Russian authorities, they can be regarded by the prosecution and courts as “false” and individuals are found guilty under Art",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "- As long as their statements are contrary to the official position of the Russian authorities, they can be regarded by the prosecution and courts as \"false\" and individuals are found guilty under Art",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        }
+      ],
+      "reference_contexts": [
+        "Article 207.3 of the Russian Criminal Code pertains to the illegal acquisition, transfer, sale, storage, transportation, or carrying of firearms, their main parts, ammunition, explosives, and explosive devices. This law aims to regulate the possession and use of dangerous weapons to maintain public safety and order.",
+        "- As long as their statements are contrary to the official position of the Russian authorities, they can be regarded by the prosecution and courts as \"false\" and individuals are found guilty under Article 207.3.\n- Official information regarding Russia's full-scale invasion of Ukraine has been riddled with false and deliberately misleading messages and claims.\n- Debunking such information and providing independent analysis of the situation has been expressly criminalized.\n- Accordingly, Article 207.3 acts as a tool of wartime censorship.\n- Prosecution for \"dissemination of knowingly false information\" under Article 207.3 contributes to impunity for violations of the laws and customs of war.\n- The claim that Roman Ivanov's actions were \"in violation of constitutional order\" do not stand scrutiny either, as Article 207.3 of the Criminal Code is contrary to the provisions of the Russian Constitution itself.\n- Article 2 of the Russian Constitution proclaims human rights and freedoms as the highest value and their defense as the duty of the state.\n- Article 17 further declares that human rights and freedoms are guaranteed \"in accordance with the recognized principles and norms of international law and this Constitution.\"\n- Article 29 guarantees freedom of thought and speech, freedom to seek, receive, share, produce and disseminate information, and media freedom.\n- At the same time, it prohibits censorship.",
+        "In addition to the legal implications, individuals found guilty under Article 207.3 may face severe penalties, including fines, imprisonment, or other restrictions on their rights and freedoms. The enforcement of this law is crucial in preventing criminal activities involving firearms and explosives in Russia."
+      ],
+      "response_time": 80.27485394477844,
+      "error": false
+    },
+    {
+      "question": "When does the prosecution consider statements contrary to the official position as 'false' under Article 207.3?",
+      "ground_truth": "The prosecution considers statements contrary to the official position as 'false' under Article 207.3 when they are in opposition to the official position of the Russian authorities.",
+      "answer": " As stated in the documents, the prosecution considers statements contrary to the official position as 'false' under Article 207.3 when they are deemed to be intentionally misleading or deceptive, and the statements are made with the purpose of obstructing justice or undermining the truth.\n\nFonte: Baseado nos documentos fornecidos.",
+      "sources": [
+        {
+          "content": "In legal proceedings, the prosecution may consider statements contrary to the official position as 'false' under Article 207.3 when they are deemed to be intentionally misleading or deceptive. This ca",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "- As long as their statements are contrary to the official position of the Russian authorities, they can be regarded by the prosecution and courts as “false” and individuals are found guilty under Art",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        },
+        {
+          "content": "- As long as their statements are contrary to the official position of the Russian authorities, they can be regarded by the prosecution and courts as \"false\" and individuals are found guilty under Art",
+          "source": "data/documents\\amnesty_qa_contexts.txt"
+        }
+      ],
+      "reference_contexts": [
+        "- As long as their statements are contrary to the official position of the Russian authorities, they can be regarded by the prosecution and courts as “false” and individuals are found guilty under Article 207.3.\n- Official information regarding Russia’s full-scale invasion of Ukraine has been riddled with false and deliberately misleading messages and claims.\n- Debunking such information and providing independent analysis of the situation has been expressly criminalized.\n- Accordingly, Article 207.3 acts as a tool of wartime censorship.\n- Prosecution for \"dissemination of knowingly false information\" under Article 207.3 contributes to impunity for violations of the laws and customs of war.\n- The claim that Roman Ivanov’s actions were \"in violation of constitutional order\" do not stand scrutiny either, as Article 207.3 of the Criminal Code is contrary to the provisions of the Russian Constitution itself.\n- Article 2 of the Russian Constitution proclaims human rights and freedoms as the highest value and their defense as the duty of the state.\n- Article 29 guarantees freedom of thought and speech, freedom to seek, receive, share, produce and disseminate information and media freedom.\n- At the same time, it prohibits censorship.",
+        "In legal proceedings, the prosecution may consider statements contrary to the official position as 'false' under Article 207.3 when they are deemed to be intentionally misleading or deceptive. This can include providing false information or deliberately distorting facts to mislead the court or authorities.",
+        "The determination of whether statements are considered 'false' under Article 207.3 is based on the intent behind the statements and the impact they have on the legal proceedings. If the prosecution believes that the statements were made with the purpose of obstructing justice or undermining the truth, they may be classified as 'false' and subject to legal consequences."
+      ],
+      "response_time": 99.34099197387695,
+      "error": false
+    }
+  ]
+}

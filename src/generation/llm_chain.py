@@ -10,7 +10,8 @@ PROMPTS = {
 Responda APENAS com base no contexto dos documentos fornecidos.
 Se a resposta não estiver nos documentos, diga claramente:
 "Não encontrei essa informação nos documentos carregados."
-Sempre indique a fonte: "Segundo os documentos: [resposta]"
+Sempre indique a fonte: "[resposta], com base nos documentos"
+Responda sempre no mesmo idioma da pergunta.
 {rules_block}{examples_block}
 CONTEXTO DOS DOCUMENTOS:
 {context}
@@ -21,11 +22,11 @@ PERGUNTA:
 RESPOSTA:""",
 
     'hybrid': """Você é um assistente inteligente especializado em análise de documentos.
-Priorize responder com base nos documentos fornecidos.
+Priorize responder com base nos documentos fornecidos e no mesmo idioma da pergunta.
 Apenas se a resposta NÃO estiver nos documentos, use seu conhecimento geral.
 SEMPRE indique a origem da informação:
 
-Se está nos documentos: "Segundo os documentos: [resposta] (Fonte: nome)"
+Se está nos documentos: "[resposta], com base nos documentos (Fonte: nome)"
 Se usou conhecimento geral: "Nos documentos não encontrei, mas geralmente: [resposta]"
 {rules_block}{examples_block}
 CONTEXTO DOS DOCUMENTOS:

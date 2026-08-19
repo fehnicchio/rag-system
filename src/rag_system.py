@@ -26,7 +26,7 @@ class RAGSystem:
       - Aprendizado contínuo via FeedbackLearner
     """
 
-    RETRIEVAL_POOL_SIZE = 20
+    RETRIEVAL_POOL_SIZE = 8
 
     def __init__(
         self,
